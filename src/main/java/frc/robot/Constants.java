@@ -119,37 +119,37 @@ public final class Constants {
  */
 
     // Front Left
-    private static final int kFrontLeftDriveMotorId = 7;
-    private static final int kFrontLeftSteerMotorId = 8;
+    private static final int kFrontLeftDriveMotorId = 5;
+    private static final int kFrontLeftSteerMotorId = 4;
     private static final int kFrontLeftEncoderId = 12;
-    private static final double kFrontLeftEncoderOffset = -(-0.232422);
+    private static final double kFrontLeftEncoderOffset = -(0);
 
     private static final double kFrontLeftXPosInches = 10.25;
     private static final double kFrontLeftYPosInches = 11.75;
 
     // Front Right
-    private static final int kFrontRightDriveMotorId = 1;
-    private static final int kFrontRightSteerMotorId = 2;
+    private static final int kFrontRightDriveMotorId = 2;
+    private static final int kFrontRightSteerMotorId = 18;
     private static final int kFrontRightEncoderId = 9;
-    private static final double kFrontRightEncoderOffset = -(-0.025391);
+    private static final double kFrontRightEncoderOffset = -(0);
 
     private static final double kFrontRightXPosInches = 10.25;
     private static final double kFrontRightYPosInches = -11.75;
 
     // Back Left
-    private static final int kBackLeftDriveMotorId = 5;
-    private static final int kBackLeftSteerMotorId = 6;
+    private static final int kBackLeftDriveMotorId = 47;
+    private static final int kBackLeftSteerMotorId = 3;
     private static final int kBackLeftEncoderId = 11;
-    private static final double kBackLeftEncoderOffset = -(-0.154785);
+    private static final double kBackLeftEncoderOffset = -(-0);
 
     private static final double kBackLeftXPosInches = -10.25;
     private static final double kBackLeftYPosInches = 11.75;
 
     // Back Right
-    private static final int kBackRightDriveMotorId = 3;
-    private static final int kBackRightSteerMotorId = 4;
+    private static final int kBackRightDriveMotorId = 7;
+    private static final int kBackRightSteerMotorId = 6;
     private static final int kBackRightEncoderId = 10;
-    private static final double kBackRightEncoderOffset = -(-0.189941);
+    private static final double kBackRightEncoderOffset = -(0);
 
     private static final double kBackRightXPosInches = -10.25;
     private static final double kBackRightYPosInches = -11.75;
