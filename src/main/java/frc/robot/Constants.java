@@ -73,7 +73,6 @@ public final class Constants {
     private static final boolean kInvertLeftSide = false;
     private static final boolean kInvertRightSide = false;
 
-    private static final String kCANbusName = "Omnivore2024";
     private static final int kPigeonId = 13;
 
     // These are only used for simulation
@@ -84,8 +83,7 @@ public final class Constants {
     private static final double kDriveFrictionVoltage = 0.25;
 
     public static final SwerveDrivetrainConstants DrivetrainConstants = new SwerveDrivetrainConstants()
-        .withPigeon2Id(kPigeonId)
-        .withCANbusName(kCANbusName);
+        .withPigeon2Id(kPigeonId);
 
     private static final SwerveModuleConstantsFactory ConstantCreator = new SwerveModuleConstantsFactory()
         .withDriveMotorGearRatio(kDriveGearRatio)
