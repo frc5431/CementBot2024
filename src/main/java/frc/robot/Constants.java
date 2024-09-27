@@ -121,7 +121,7 @@ public final class Constants {
     // Front Left
     private static final int kFrontLeftDriveMotorId = 5;
     private static final int kFrontLeftSteerMotorId = 4;
-    private static final int kFrontLeftEncoderId = 12;
+    private static final int kFrontLeftEncoderId = 45;
     private static final double kFrontLeftEncoderOffset = -(0);
 
     private static final double kFrontLeftXPosInches = 10.25;
@@ -130,7 +130,7 @@ public final class Constants {
     // Front Right
     private static final int kFrontRightDriveMotorId = 2;
     private static final int kFrontRightSteerMotorId = 18;
-    private static final int kFrontRightEncoderId = 9;
+    private static final int kFrontRightEncoderId = 1;
     private static final double kFrontRightEncoderOffset = -(0);
 
     private static final double kFrontRightXPosInches = 10.25;
@@ -139,7 +139,7 @@ public final class Constants {
     // Back Left
     private static final int kBackLeftDriveMotorId = 47;
     private static final int kBackLeftSteerMotorId = 3;
-    private static final int kBackLeftEncoderId = 11;
+    private static final int kBackLeftEncoderId = 10;
     private static final double kBackLeftEncoderOffset = -(-0);
 
     private static final double kBackLeftXPosInches = -10.25;
@@ -148,7 +148,7 @@ public final class Constants {
     // Back Right
     private static final int kBackRightDriveMotorId = 7;
     private static final int kBackRightSteerMotorId = 6;
-    private static final int kBackRightEncoderId = 10;
+    private static final int kBackRightEncoderId = 0;
     private static final double kBackRightEncoderOffset = -(0);
 
     private static final double kBackRightXPosInches = -10.25;
