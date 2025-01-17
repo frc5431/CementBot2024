@@ -1,5 +1,7 @@
 package frc.robot;
 
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -92,10 +94,18 @@ public final class Constants {
     private static final double kDriveFrictionVoltage = 0.25;
 
 
-    
+    // WORKM RN OR ELSE
     public static final SwerveDrivetrainConstants DrivetrainConstants = new SwerveDrivetrainConstants()
         .withPigeon2Id(kPigeonId);
         // .withCANBusName(kCANbusName);
+
+        public static final MagnetSensorConfigs magConfig = new MagnetSensorConfigs()
+        .withAbsoluteSensorDiscontinuityPoint(1);
+    
+
+    public static final CANcoderConfiguration canCongfig = new CANcoderConfiguration()
+    .withMagnetSensor(magConfig);
+
 
     private static final SwerveModuleConstantsFactory ConstantCreator = new SwerveModuleConstantsFactory()
         .withDriveMotorGearRatio(kDriveGearRatio)
@@ -112,6 +122,7 @@ public final class Constants {
         .withSteerFrictionVoltage(kSteerFrictionVoltage)
         .withDriveFrictionVoltage(kDriveFrictionVoltage)
         .withFeedbackSource(SteerFeedbackType.FusedCANcoder)
+//        .withEncoderInitialConfigs(canCongfig)
         .withCouplingGearRatio(kCoupleRatio);
 /**
   How to re-align swerves & find offsets manually.
@@ -131,7 +142,7 @@ public final class Constants {
     private static final int kFrontLeftDriveMotorId = 6;
     private static final int kFrontLeftSteerMotorId = 5;
     private static final int kFrontLeftEncoderId = 11;
-    private static final double kFrontLeftEncoderOffset = -(-0.232422);
+    private static final double kFrontLeftEncoderOffset = 0;
 
     private static final double kFrontLeftXPosInches = 10.25;
     private static final double kFrontLeftYPosInches = 11.75;
@@ -140,16 +151,16 @@ public final class Constants {
     private static final int kFrontRightDriveMotorId = 4;
     private static final int kFrontRightSteerMotorId = 3;
     private static final int kFrontRightEncoderId = 10;
-    private static final double kFrontRightEncoderOffset = -(-0.025391);
+    private static final double kFrontRightEncoderOffset = 0.478760;
 
     private static final double kFrontRightXPosInches = 10.25;
     private static final double kFrontRightYPosInches = -11.75;
 
     // Back Left
-    private static final int kBackLeftDriveMotorId = 6;
+    private static final int kBackLeftDriveMotorId = 8;
     private static final int kBackLeftSteerMotorId = 7;
     private static final int kBackLeftEncoderId = 12;
-    private static final double kBackLeftEncoderOffset = -(-0.154785);
+    private static final double kBackLeftEncoderOffset = -0.354492;
 
     private static final double kBackLeftXPosInches = -10.25;
     private static final double kBackLeftYPosInches = 11.75;
@@ -158,7 +169,7 @@ public final class Constants {
     private static final int kBackRightDriveMotorId = 2;
     private static final int kBackRightSteerMotorId = 1;
     private static final int kBackRightEncoderId = 9;
-    private static final double kBackRightEncoderOffset = -(-0.189941);
+    private static final double kBackRightEncoderOffset = -0.024170;
 
     private static final double kBackRightXPosInches = -10.25;
     private static final double kBackRightYPosInches = -11.75;
