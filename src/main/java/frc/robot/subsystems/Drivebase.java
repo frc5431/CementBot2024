@@ -27,7 +27,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Constants.TunerSwerveDrivetrain;
+import frc.robot.Constants.TunerConstatns.TunerSwerveDrivetrain;
 
 
 /**
@@ -228,15 +228,17 @@ public class Drivebase extends TunerSwerveDrivetrain implements Subsystem {
     //     }
     // }
 
-    // /**
-    //  * Returns a command that applies the specified control request to this swerve drivetrain.
-    //  *
-    //  * @param request Function returning the request to apply
-    //  * @return Command to run
-    //  */
+    
+    /**
+     * Returns a command that applies the specified control request to this swerve drivetrain.
+     *
+     * @param request Function returning the request to apply
+     * @return Command to run
+     */
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
         return run(() -> this.setControl(requestSupplier.get()));
     }
+
 
     
     

@@ -20,7 +20,7 @@ public class Systems {
 
     blinkin = new Blinkin(0);
     
-    pheonixdrivebase = new Drivebase(TunerConstatns.DrivetrainConstants, TunerConstatns.FrontLeft, TunerConstatns.FrontRight, TunerConstatns.BackLeft, TunerConstatns.BackRight);
+     pheonixdrivebase = TunerConstatns.createDrivetrain();
 
     instance = this;
 

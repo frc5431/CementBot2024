@@ -5,6 +5,7 @@
 package frc.robot;
 
 
+import edu.wpi.first.units.Units;
 // import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -18,6 +19,9 @@ import frc.robot.subsystems.Drivebase;
 import frc.robot.swerve.TitanFieldCentricFacingAngle;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 // import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -28,6 +32,9 @@ public class RobotContainer {
   private final Systems systems = new Systems();
   private final Drivebase drivebase = systems.getDrivebase();
 
+   private double MaxSpeed = Constants.TunerConstatns.kSpeedAt12Volts.in(Units.MetersPerSecond); // kSpeedAt12Volts desired top speed
+    private double MaxAngularRate = RotationsPerSecond.of(0.75).in(Units.RadiansPerSecond); 
+
   // private final Blinkin blinkin = systems.getBlinkin();
   // private final AutonMagic autonMagic;
 
@@ -36,9 +43,10 @@ public class RobotContainer {
   SwerveRequest.FieldCentricFacingAngle driveFacing = new SwerveRequest.FieldCentricFacingAngle()
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
-  private SwerveRequest.FieldCentric driveFC = new SwerveRequest.FieldCentric()
-      .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-
+  /* Setting up bindings for necessary control of the swerve drive platform */
+    private final SwerveRequest.FieldCentric driveFC = new SwerveRequest.FieldCentric()
+            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
 
   private SwerveRequest.RobotCentric driveRo = new SwerveRequest.RobotCentric()
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
@@ -93,45 +101,19 @@ public class RobotContainer {
     SmartDashboard.putData("Scheduler", CommandScheduler.getInstance());
   }
   
-  private Command lockToAngleCommand(double redAngle, double blueAngle) {
-    return drivebase.applyRequest(() -> {
-      double u = driver.getLeftX();
-      double v = driver.getLeftY();
-
-      double root2 = Math.sqrt(2);
-      double magnitude = Math.sqrt(u * u + v * v);
-      double x2 = Math.signum(u) * Math.min(Math.abs(u * root2), magnitude);
-      double y2 = Math.signum(v) * Math.min(Math.abs(v * root2), magnitude);
-      return facingRequest
-          .withVelocityX(
-              modifyAxis(y2)
-                  * TunerConstatns.kSpeedAt12VoltsMps)
-          .withHeading(edu.wpi.first.math.util.Units.degreesToRadians((DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) ? blueAngle : redAngle))
-          .withVelocityY(modifyAxis(x2) * TunerConstatns.kSpeedAt12VoltsMps);
-    }).until(() -> Math.abs(driver.getRawAxis(4)) > 0.15);
-  }
+  
 
   private void configureBindings() {
-    drivebase.setDefaultCommand( // Drivetrain will execute this command periodically
-        drivebase.applyRequest(() -> {
-         double u = driver.getLeftX();
-      double v = driver.getLeftY();
-
-      double root2 = Math.sqrt(2);
-      double magnitude = Math.sqrt(u * u + v * v);
-      double x2 = Math.signum(u) * Math.min(Math.abs(u * root2), magnitude);
-      double y2 = Math.signum(v) * Math.min(Math.abs(v * root2), magnitude);
-
-
-          return driveFC
-              .withVelocityX(
-                  modifyAxis(y2 + (driver.povUp().getAsBoolean() ? 0.1 : 0))
-                      * TunerConstatns.kSpeedAt12VoltsMps)
-              .withVelocityY(modifyAxis(x2) * TunerConstatns.kSpeedAt12VoltsMps)
-              .withRotationalRate(
-                  modifyAxis(driver.getRightX()) * TunerConstatns.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND);
-        }));
-
+      // Note that X is defined as forward according to WPILib convention,
+        // and Y is defined as to the left according to WPILib convention.
+        drivebase.setDefaultCommand(
+            // Drivetrain will execute this command periodically
+            drivebase.applyRequest(() ->
+              driveFC.withVelocityX(-driver.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+                    .withVelocityY(-driver.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+                    .withRotationalRate(-driver.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+            )
+        );
     }
  
 
