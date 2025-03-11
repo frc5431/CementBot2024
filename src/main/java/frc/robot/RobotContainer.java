@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-
 import edu.wpi.first.units.Units;
 // import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -14,8 +13,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 // import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.ControllerConstants;
+import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.Constants.TunerConstatns;
-import frc.robot.subsystems.Drivebase;
+import frc.robot.Subsystems.Drivebase.Drivebase;
 import frc.robot.swerve.TitanFieldCentricFacingAngle;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -79,6 +80,17 @@ public class RobotContainer {
     }
   }
 
+  public double deadzone(double num) {
+		if (Math.abs(num) > ControllerConstants.deadzone) {
+			
+			double w = 1.0 / ( 1.0 - ControllerConstants.deadzone);
+			double b = w * ControllerConstants.deadzone;
+			return (w * Math.abs(num) - b) * (num / Math.abs(num));
+		} else {
+			return 0;
+		}
+	}
+
   private static double modifyAxis(double value) {
     // Deadband
     // var alliance = DriverStation.getAlliance();
@@ -87,6 +99,8 @@ public class RobotContainer {
     // }
 
     value = deadband(value, 0.15);
+
+    
 
     // More sensitive at smaller speeds
     double newValue = Math.pow(value, 2);
@@ -107,13 +121,16 @@ public class RobotContainer {
       // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
         drivebase.setDefaultCommand(
-            // Drivetrain will execute this command periodically
-            drivebase.applyRequest(() ->
-              driveRo.withVelocityX(-driver.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(-driver.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(-driver.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
-            )
-        );
+        drivebase.applyRequest(
+						() -> drivebase.getDriverControl()
+								.withVelocityX(deadzone(-driver.getLeftY())
+										* Constants.TunerConstatns.kSpeedAt12Volts.in(Units.MetersPerSecond))
+								.withVelocityY(deadzone(-driver.getLeftX())
+										* Constants.TunerConstatns.kSpeedAt12Volts.in(Units.MetersPerSecond))
+								.withRotationalRate(
+										deadzone(-driver.getRightX()
+												* DrivebaseConstants.MaxAngularRate.in(Units.RadiansPerSecond))))
+						.withName("Swerve Default Command"));
     }
  
 

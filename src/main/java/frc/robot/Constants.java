@@ -6,6 +6,7 @@ import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Volts;
+import edu.wpi.first.units.Units;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
@@ -19,18 +20,19 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import com.ctre.phoenix6.swerve.*;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.*;
+import com.pathplanner.lib.config.PIDConstants;
 
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.subsystems.Drivebase;
 
 public final class Constants {
   public static final boolean isGals = false;
@@ -44,6 +46,96 @@ public final class Constants {
     public static final boolean isTauseefCool = true;
   }
   
+  public static class ControllerConstants {
+    public enum ControlStates {
+        CLEAN, CORAL,
+    }
+
+    public static final int driverPort = 0;
+    public static final int operatorPort = 1;
+
+    public static final boolean using8BitDo = false;
+
+    public static final double deadzone = 0.15;
+    public static final double triggerThreshold = 0.5;
+
+}
+
+public static class VisionConstants {
+
+        public static final boolean useVisionPeriodic = true;
+
+        public static final String cameraName = "LimeLight3";
+        public static final Distance centLLForwardOffset = Units.Inches.of(-13.926);
+        public static final Distance centLLRightOffset = Units.Inches.of(-0.886);
+        public static final Distance centLLUpOffset = Units.Inches.of(10.428);
+        public static final Angle centLLRollOffset = Units.Degrees.of(0);
+        public static final Angle centLLPitchOffset = Units.Degrees.of(0);
+        public static final Angle centLLYawOffset = Units.Degrees.of(180);
+
+        public static final Distance rightLLForwardOffset = Units.Inches.of(0);
+        public static final Distance rightLLRightOffset = Units.Inches.of(0);
+        public static final Distance rightLLUpOffset = Units.Inches.of(0);
+        public static final Angle rightLLRollOffset = Units.Degrees.of(0);
+        public static final Angle rightLLPitchOffset = Units.Degrees.of(0);
+        public static final Angle rightLLYawOffset = Units.Degrees.of(0);
+
+        public static final int centerTagPipeline = 0;
+        public static final int rightTagPipeline = 0;
+
+        public static final Distance rightPipeOffset = Units.Inches.of(6);
+        public static final Distance leftPipeOffset = Units.Inches.of(6);
+        public static final Distance pipeScoreOffset = Units.Inches.of(6);
+        public static final Distance centerScoreOffset = Units.Inches.of(2);
+        public static final Distance centerOffset = Units.Inches.of(2);
+        public static final Distance allowedError = Units.Inches.of(1);
+
+        public static final LinearVelocity alignYVelocity = Units.FeetPerSecond.of(1 / 1);
+        public static final LinearVelocity alignXVelocity = Units.FeetPerSecond.of(1 / 1);
+        public static final AngularVelocity alignThetaVelocity = Units.RadiansPerSecond.of(0.0);
+        public static final ChassisSpeeds alignXSpeed = new ChassisSpeeds(alignXVelocity, Units.FeetPerSecond.of(0),
+                alignThetaVelocity);
+        public static final ChassisSpeeds alignYSpeed = new ChassisSpeeds(Units.FeetPerSecond.of(0), alignYVelocity,
+                alignThetaVelocity);
+
+        public static final double highTrustStds = 0.1;
+        public static final double servicableTrustStds = 0.25;
+        public static final double defaultTrustStds = 0.5;
+        public static final double decreasedTrustStds = 2;
+
+        public static final double lowTrustStds = 5;
+        public static final double badTrustStds = 8;
+        public static final double dismalTrustStds = 15;
+        public static final double abysmalTrustStds = 16;
+        public static final double noTrustStds = 9999;
+
+        /**
+         * idk what unit this is
+         * spectrum did 0.025
+         */
+        public static final double minSizeRejection = 0.025;
+        public static final AngularVelocity maxRadPerSec = Units.RadiansPerSecond.of(1.6);
+        public static final AngularVelocity lowTrustRadPerSec = Units.RadiansPerSecond.of(0.5);
+
+        public static final Distance visionRejectDistance = Units.Meters.of(1);
+        /**
+         * Meters per Second
+         */
+        public static final double velocityLowTrustThreshold = 0.2;
+
+    }
+
+    public static class AutonConstants {
+        // The PID values from last year
+        public static final PIDConstants translationPID = new PIDConstants(2, 0, 0);
+        public static final PIDConstants rotationPID = new PIDConstants(.1, 0, .01);
+    }
+
+  public static class DrivebaseConstants {
+        public static final AngularVelocity MaxAngularRate = Units.RotationsPerSecond.of(0.5);
+        public static final Distance robotLength = Units.Inches.of(28);
+         
+    }
 
   public static class TunerConstatns {
      // Both sets of gains need to be tuned to your individual robot.
@@ -221,14 +313,7 @@ public final class Constants {
         );
 
     /**
-     * Creates a CommandSwerveDrivetrain instance.
-     * This should only be called once in your robot program,.
-     */
-    public static Drivebase createDrivetrain() {
-        return new Drivebase (
-            DrivetrainConstants, FrontLeft, FrontRight, BackLeft, BackRight
-        );
-    }
+
 
 
     /**
