@@ -28,7 +28,7 @@ public class Systems {
 
   public static Vision getVision() {
         return vision;
-      }
+    }
 
   private Blinkin blinkin;
 

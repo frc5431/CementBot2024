@@ -111,7 +111,8 @@ public class Vision extends SubsystemBase {
         SmartDashboard.putBoolean("Reef Tag SCan", this.OnlyIfNullChecker()); // Yaw should be 0 when intake faces red
                                                                               // alliance and manip faces blue
         // Yaw should be 180 when intake faces blue alliance and manip faces red
-        double yaw = Systems.getDrivebase() .getOperatorForwardDirection().getMeasure().plus(Degrees.of(180)).in(Degrees);
+        double yaw = Systems.getDrivebase().getOperatorForwardDirection().getMeasure().plus(Degrees.of(180))
+                .in(Degrees);
         for (LimelightHelpers.VisionHelper visionHelper : poseLimelights) {
             visionHelper.setRobotOrientation(yaw);
 
@@ -126,30 +127,28 @@ public class Vision extends SubsystemBase {
 
         try {
             isIntegrating = false;
-            // Will NOT run in auto
+            // Will NOT run in auto;
             if (DriverStation.isTeleopEnabled() && VisionConstants.useVisionPeriodic) {
 
                 // choose LL with best view of tags and integrate from only that camera
                 LimelightHelpers.VisionHelper bestLimelight = getBestLimelight();
-                for (LimelightHelpers.VisionHelper visionHelper : poseLimelights) {
-                    if (getReefAlignment().getAsBoolean()
-                            && Field.isReef((bestLimelight.getClosestTagID()))) {
+                //TODO THIS IS WRONG
+                    if (getReefAlignment().getAsBoolean() && Field.isReef((bestLimelight.getClosestTagID()))) {
                         addFilteredVisionInput(bestLimelight);
                     } else {
-                        visionHelper.sendInvalidStatus("SAD!: Apriltag is not matched Reef ID");
+                        System.out.print("SAD!: Apriltag is not matched Reef ID");
                     }
-                    isIntegrating |= visionHelper.isIntegrating;
                 }
 
-            }
+            
         } catch (Exception e) {
             System.out.println("Vision pose not present but tried to access it [vision.periodic()]");
         }
     }
 
     private void addFilteredVisionInput(LimelightHelpers.VisionHelper ll) {
-        double xyStds = 1000;
-        double degStds = 1000;
+        double xyStds = 0.1;
+        double degStds = 0.1;
 
         // integrate vision
         if (ll.targetInView()) {
@@ -164,7 +163,8 @@ public class Vision extends SubsystemBase {
             ChassisSpeeds robotSpeeds = drivebase.getChassisSpeeds();
 
             // distance from current pose to vision estimated pose
-            double poseError = Systems.getDrivebase().getRobotPose().getTranslation().getDistance(botpose.getTranslation());
+            double poseError = Systems.getDrivebase().getRobotPose().getTranslation()
+                    .getDistance(botpose.getTranslation());
 
             /* rejections */
             // reject pose if individual tag ambiguity is too high
@@ -300,6 +300,7 @@ public class Vision extends SubsystemBase {
 
     public void resetPoseToVision() {
         LimelightHelpers.VisionHelper ll = getBestLimelight();
+        
         resetPoseToVision(
                 ll.targetInView(), ll.getRawPose3d(), ll.getMegaPose2d(), ll.getRawPoseTimestamp());
     }
@@ -312,7 +313,6 @@ public class Vision extends SubsystemBase {
     public boolean resetPoseToVision(
             boolean targetInView, Pose3d botpose3D, Pose2d megaPose, double poseTimestamp) {
         boolean reject = false;
-        System.out.println("im spluring all over mfgh");
         if (targetInView) {
             System.out.println("target in view");
 
@@ -332,8 +332,8 @@ public class Vision extends SubsystemBase {
                 reject = true;
             } else if (Math.abs(botpose3D.getZ()) > 0.25) {
                 System.out.println(
-                        "ResetPoseToVision: FAIL || DID NOT RESET POSE TO VISION BECAUSE IN AIR");
-                reject = true;
+                        "flying but idc");
+                reject = false;
             } else if ((Math.abs(botpose3D.getRotation().getX()) > 5
                     || Math.abs(botpose3D.getRotation().getY()) > 5)) {
                 System.out.println(
@@ -382,21 +382,29 @@ public class Vision extends SubsystemBase {
         return false; // target not in view
     }
 
-    //TODO: this doesnt work cant find best returns nothing
+    // TODO: this doesnt work cant find best returns nothing
     public LimelightHelpers.VisionHelper getBestLimelight() {
         LimelightHelpers.VisionHelper bestLimelight = centLL3;
-        double bestScore = 0;
-        for (LimelightHelpers.VisionHelper visionHelper : poseLimelights) {
-            double score = 0;
-            // prefer LL with most tags, when equal tag count, prefer LL closer to tags
-            score += visionHelper.getTagCountInView();
-            score += visionHelper.getTargetSize();
+        // double bestScore = 0;
+        // for (LimelightHelpers.VisionHelper visionHelper : poseLimelights) {
+        //     double score = 0;
+        //     // prefer LL with most tags, when equal tag count, prefer LL closer to tags
+        //     try {
+        //         visionHelper.getTagCountInView();
+        //         System.out.println("Exits Get Tag Count" + visionHelper.getTagCountInView());
 
-            if (score > bestScore) {
-                bestScore = score;
-                bestLimelight = visionHelper;
-            }
-        }
+        //         score += visionHelper.getTagCountInView();
+        //         score += visionHelper.getTargetSize();
+
+        //         if (score > bestScore) {
+        //             bestScore = score;
+        //             bestLimelight = visionHelper;
+        //         }
+        //     } catch (NullPointerException nullPointerException) {
+        //         System.out.println("Get Tag Count Null");
+        //         break;
+        //     }
+        // }
         return bestLimelight;
     }
 

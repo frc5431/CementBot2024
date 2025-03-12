@@ -705,7 +705,6 @@ public class LimelightHelpers {
 
     private static PoseEstimate getBotPoseEstimate(String limelightName, String entryName, boolean isMegaTag2) {
         DoubleArrayEntry poseEntry = LimelightHelpers.getLimelightDoubleArrayEntry(limelightName, entryName);
-        
         TimestampedDoubleArray tsValue = poseEntry.getAtomic();
         double[] poseArray = tsValue.value;
         long timestamp = tsValue.timestamp;
@@ -729,6 +728,11 @@ public class LimelightHelpers {
         int valsPerFiducial = 7;
         int expectedTotalVals = 11 + valsPerFiducial * tagCount;
     
+        System.out.println("Before");
+        System.out.println(tagCount);
+        System.out.println(pose.toString());
+        System.out.println("After");
+
         if (poseArray.length != expectedTotalVals) {
             // Don't populate fiducials
         } else {

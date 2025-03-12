@@ -64,10 +64,10 @@ public static class VisionConstants {
 
         public static final boolean useVisionPeriodic = true;
 
-        public static final String cameraName = "LimeLight3";
-        public static final Distance centLLForwardOffset = Units.Inches.of(-13.926);
-        public static final Distance centLLRightOffset = Units.Inches.of(-0.886);
-        public static final Distance centLLUpOffset = Units.Inches.of(10.428);
+        public static final String cameraName = "limelight";
+        public static final Distance centLLForwardOffset = Units.Inches.of(0);
+        public static final Distance centLLRightOffset = Units.Inches.of(0);
+        public static final Distance centLLUpOffset = Units.Inches.of(0);
         public static final Angle centLLRollOffset = Units.Degrees.of(0);
         public static final Angle centLLPitchOffset = Units.Degrees.of(0);
         public static final Angle centLLYawOffset = Units.Degrees.of(180);
