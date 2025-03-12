@@ -32,7 +32,8 @@ public class RobotContainer {
   public static final CommandXboxController driver = new CommandXboxController(0);
   public static final CommandXboxController operator = new CommandXboxController(1); 
   private final Systems systems = new Systems();
-  private final Drivebase drivebase = systems.getDrivebase();
+  private static final Vision vision = Systems.getVision();
+  private static final Drivebase drivebase = Systems.getDrivebase();
 
    private double MaxSpeed = Constants.TunerConstatns.kSpeedAt12Volts.in(Units.MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(Units.RadiansPerSecond); 
@@ -113,6 +114,7 @@ public class RobotContainer {
   }
 
   public void periodic() {
+    vision.periodic();
     SmartDashboard.putData("Scheduler", CommandScheduler.getInstance());
   }
   
@@ -135,7 +137,7 @@ public class RobotContainer {
 												* DrivebaseConstants.MaxAngularRate.in(Units.RadiansPerSecond))))
 						.withName("Swerve Default Command"));
 
-          commandTask.onTrue(new Vision().commandSetPostionVision());
+          commandTask.onTrue(vision.commandSetPostionVision());
     }
 
     

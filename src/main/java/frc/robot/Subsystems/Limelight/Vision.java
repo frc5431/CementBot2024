@@ -61,7 +61,7 @@ public class Vision extends SubsystemBase {
             VISION_STD_DEV_THETA);
 
     // TODO: deal with this
-    private Drivebase drivebase = Systems.getDrivebase();
+    private static Drivebase drivebase = Systems.getDrivebase();
 
     // TODO: we only have one for now
     /* Limelights */
@@ -111,7 +111,7 @@ public class Vision extends SubsystemBase {
         SmartDashboard.putBoolean("Reef Tag SCan", this.OnlyIfNullChecker()); // Yaw should be 0 when intake faces red
                                                                               // alliance and manip faces blue
         // Yaw should be 180 when intake faces blue alliance and manip faces red
-        double yaw = drivebase.getOperatorForwardDirection().getMeasure().plus(Degrees.of(180)).in(Degrees);
+        double yaw = Systems.getDrivebase() .getOperatorForwardDirection().getMeasure().plus(Degrees.of(180)).in(Degrees);
         for (LimelightHelpers.VisionHelper visionHelper : poseLimelights) {
             visionHelper.setRobotOrientation(yaw);
 
@@ -164,7 +164,7 @@ public class Vision extends SubsystemBase {
             ChassisSpeeds robotSpeeds = drivebase.getChassisSpeeds();
 
             // distance from current pose to vision estimated pose
-            double poseError = drivebase.getRobotPose().getTranslation().getDistance(botpose.getTranslation());
+            double poseError = Systems.getDrivebase().getRobotPose().getTranslation().getDistance(botpose.getTranslation());
 
             /* rejections */
             // reject pose if individual tag ambiguity is too high
@@ -254,14 +254,14 @@ public class Vision extends SubsystemBase {
             VisionConfig.VISION_STD_DEV_Y = xyStds;
             VisionConfig.VISION_STD_DEV_THETA = degStds;
 
-            drivebase.setVisionMeasurementStdDevs(
+            Systems.getDrivebase().setVisionMeasurementStdDevs(
                     VecBuilder.fill(
                             VisionConfig.VISION_STD_DEV_X,
                             VisionConfig.VISION_STD_DEV_Y,
                             VisionConfig.VISION_STD_DEV_THETA));
 
             Pose2d integratedPose = new Pose2d(megaPose2d.getTranslation(), botpose.getRotation());
-            drivebase.addVisionMeasurement(integratedPose, timeStamp);
+            Systems.getDrivebase().addVisionMeasurement(integratedPose, timeStamp);
         } else {
             ll.tagStatus = "no tags";
             ll.sendInvalidStatus("Vision: no tag found rejection");
@@ -312,9 +312,12 @@ public class Vision extends SubsystemBase {
     public boolean resetPoseToVision(
             boolean targetInView, Pose3d botpose3D, Pose2d megaPose, double poseTimestamp) {
         boolean reject = false;
+        System.out.println("im spluring all over mfgh");
         if (targetInView) {
+            System.out.println("target in view");
+
             Pose2d botpose = botpose3D.toPose2d();
-            Pose2d robotPose = drivebase.getRobotPose();
+            Pose2d robotPose = Systems.getDrivebase().getRobotPose();
             if (Field.poseOutOfField(botpose3D)
                     || Math.abs(botpose3D.getZ()) > 0.25
                     || (Math.abs(botpose3D.getRotation().getX()) > 5
@@ -355,16 +358,16 @@ public class Vision extends SubsystemBase {
                             + robotPose.getY()
                             + " Theta: "
                             + robotPose.getRotation().getDegrees());
-            drivebase.setVisionMeasurementStdDevs(
+            Systems.getDrivebase().setVisionMeasurementStdDevs(
                     VecBuilder.fill(
                             VisionConfig.VISION_STD_DEV_X,
                             VisionConfig.VISION_STD_DEV_Y,
                             VisionConfig.VISION_STD_DEV_THETA));
 
             Pose2d integratedPose = new Pose2d(megaPose.getTranslation(), botpose.getRotation());
-            drivebase.addVisionMeasurement(integratedPose, poseTimestamp);
+            Systems.getDrivebase().addVisionMeasurement(integratedPose, poseTimestamp);
             // robotpose after vision mesurments have been added
-            robotPose = drivebase.getRobotPose();
+            robotPose = Systems.getDrivebase().getRobotPose();
             System.out.println(
                     "ResetPoseToVision: New Pose X: "
                             + robotPose.getX()
@@ -375,6 +378,7 @@ public class Vision extends SubsystemBase {
             System.out.println("ResetPoseToVision: SUCCESS");
             return true;
         }
+        System.out.println("FUCK");
         return false; // target not in view
     }
 

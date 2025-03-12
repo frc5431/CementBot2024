@@ -24,7 +24,7 @@ public class Systems {
 
   public static Systems instance;
 
-      private static Vision vision;
+      private static Vision vision = new Vision();
 
   public static Vision getVision() {
         return vision;
@@ -46,7 +46,7 @@ public class Systems {
 
     blinkin = new Blinkin(0);
     
-
+    vision = new Vision();
     instance = this;
 
     // LasaVision.getInstance().setPoseSupplier(() -> pheonixdrivebase.getPose());
