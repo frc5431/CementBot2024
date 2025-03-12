@@ -11,7 +11,6 @@ import edu.wpi.first.units.Units;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -134,6 +133,11 @@ public static class VisionConstants {
   public static class DrivebaseConstants {
         public static final AngularVelocity MaxAngularRate = Units.RotationsPerSecond.of(0.5);
         public static final Distance robotLength = Units.Inches.of(28);
+        public static final AngularVelocity AngularDeadzone = DrivebaseConstants.MaxAngularRate.times(0.1);
+        public static final AngularVelocity VisionAngularDeadzone = DrivebaseConstants.MaxAngularRate.times(0.1);
+
+        public static final AngularVelocity AutoAngularDeadzone = DrivebaseConstants.MaxAngularRate.times(0.1);
+        public static final AngularVelocity AutonMaxAngularRate = Units.RotationsPerSecond.of(0.5);
          
     }
 

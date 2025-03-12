@@ -17,6 +17,7 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.Constants.TunerConstatns;
 import frc.robot.Subsystems.Drivebase.Drivebase;
+import frc.robot.Subsystems.Limelight.Vision;
 import frc.robot.swerve.TitanFieldCentricFacingAngle;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -117,6 +118,8 @@ public class RobotContainer {
   
   
 
+  private Trigger commandTask = driver.a();
+
   private void configureBindings() {
       // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
@@ -131,7 +134,11 @@ public class RobotContainer {
 										deadzone(-driver.getRightX()
 												* DrivebaseConstants.MaxAngularRate.in(Units.RadiansPerSecond))))
 						.withName("Swerve Default Command"));
+
+          commandTask.onTrue(new Vision().commandSetPostionVision());
     }
+
+    
  
 
     // blinkin.setDefaultCommand(new InstantCommand(() -> blinkin.set(BlinkinPattern.CP1_2_TWINKLES), blinkin));    

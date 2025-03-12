@@ -68,13 +68,13 @@ public class Drivebase extends frc.robot.Constants.TunerConstatns.TunerSwerveDri
 
     private SwerveRequest.SwerveDriveBrake xLock = new SwerveDriveBrake();
     private SwerveRequest.FieldCentricFacingAngle driverFieldCentricFacingAngle = new FieldCentricFacingAngle()
-            .withMaxAbsRotationalRate(null)
-            .withRotationalDeadband(null)
+            .withMaxAbsRotationalRate(DrivebaseConstants.AutonMaxAngularRate)
+            .withRotationalDeadband(DrivebaseConstants.AngularDeadzone)
             .withForwardPerspective(ForwardPerspectiveValue.OperatorPerspective);
 
     private SwerveRequest.RobotCentricFacingAngle autonRobotCentricFacingAngle = new RobotCentricFacingAngle()
-            .withMaxAbsRotationalRate(null)
-            .withRotationalDeadband(null)
+            .withMaxAbsRotationalRate(DrivebaseConstants.AutonMaxAngularRate)
+            .withRotationalDeadband(DrivebaseConstants.AutoAngularDeadzone)
             .withForwardPerspective(ForwardPerspectiveValue.OperatorPerspective);
 
     private  SwerveRequest.ForwardPerspectiveValue perspectiveValue = ForwardPerspectiveValue.OperatorPerspective;
@@ -83,7 +83,7 @@ public class Drivebase extends frc.robot.Constants.TunerConstatns.TunerSwerveDri
         return perspectiveValue;
     }
 
-    private SwerveRequest.RobotCentric visionRobotCentric = new RobotCentric().withRotationalDeadband(null);
+    private SwerveRequest.RobotCentric visionRobotCentric = new RobotCentric().withRotationalDeadband(DrivebaseConstants.AutoAngularDeadzone);
 
 	public SwerveRequest.RobotCentric getVisionRobotCentric() {
         return visionRobotCentric;

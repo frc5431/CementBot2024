@@ -9,10 +9,9 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
-import frc.robot.Subsystems.Limelight.LimelightHelpers.VisionHelper.PhysicalConfig;
+import frc.robot.Subsystems.Limelight.LimelightHelpers;
 import frc.robot.Constants.VisionConstants;
 import frc.team5431.titan.core.vision.Limelight;
-import frc.robot.Subsystems.Limelight.LimelightHelpers.VisionHelper;
 
 public class VisionUtil {
 
@@ -62,7 +61,7 @@ public class VisionUtil {
         /* Limelight Configuration */
 
         public static final String LEFT_LL = VisionConstants.cameraName;
-        public static final PhysicalConfig centerConfig = new PhysicalConfig()
+        public static final LimelightHelpers.VisionHelper.PhysicalConfig centerConfig = new LimelightHelpers.VisionHelper.PhysicalConfig()
                 .withTranslation(VisionConstants.centLLForwardOffset.in(Units.Meters), VisionConstants.centLLRightOffset.in(Units.Meters), VisionConstants.centLLUpOffset.in(Units.Meters))
                 .withRotation(VisionConstants.centLLRollOffset.in(Units.Degrees), VisionConstants.centLLPitchOffset.in(Units.Degrees), VisionConstants.centLLYawOffset.in(Units.Degrees));
 
@@ -86,9 +85,9 @@ public class VisionUtil {
 
     public static class LimelightLogger {
         private String name;
-        public VisionHelper visionHelper;
+        public LimelightHelpers.VisionHelper visionHelper;
 
-        public LimelightLogger(String name, VisionHelper visionHelper) {
+        public LimelightLogger(String name, LimelightHelpers.VisionHelper visionHelper) {
             this.visionHelper = visionHelper;
             this.name = name;
         }

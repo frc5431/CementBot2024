@@ -11,12 +11,11 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.Subsystems.Drivebase.Drivebase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Subsystems.Limelight.LimelightHelpers.RawFiducial;
-import frc.robot.Subsystems.Limelight.LimelightHelpers.Trio;
-import frc.robot.Subsystems.Limelight.LimelightHelpers.VisionHelper;
+import frc.robot.Subsystems.Limelight.LimelightHelpers;
 import frc.robot.Subsystems.Limelight.VisionUtil.LimelightLogger;
 import frc.robot.Subsystems.Limelight.VisionUtil.VisionConfig;
 import frc.robot.Subsystems.Field;
@@ -40,7 +39,7 @@ public class Vision extends SubsystemBase {
      * {@code poseLimelights}
      */
 
-    private  Trigger reefAlignment = new Trigger(
+    private Trigger reefAlignment = new Trigger(
             Systems.getDriver().rightBumper().or(Systems.getDriver().leftBumper()));
 
     /* Pose Estimation Constants */ // 2.3;
@@ -66,7 +65,7 @@ public class Vision extends SubsystemBase {
 
     // TODO: we only have one for now
     /* Limelights */
-    public final VisionHelper centLL3 = new LimelightHelpers().new VisionHelper(
+    public final LimelightHelpers.VisionHelper centLL3 = new LimelightHelpers().new VisionHelper(
             VisionConfig.LEFT_LL, VisionConstants.centerTagPipeline, VisionConfig.centerConfig);
 
     // public final LimelightLogger leftLogger = new LimelightLogger("Left",
@@ -77,8 +76,8 @@ public class Vision extends SubsystemBase {
     // VisionConfig.RIGHT_CONFIG);
     // public final LimelightLogger rightLogger = new LimelightLogger("Right",
     // rightLL);
-    public final VisionHelper[] allLimelights = { centLL3 };
-    public final VisionHelper[] poseLimelights = {
+    public final LimelightHelpers.VisionHelper[] allLimelights = { centLL3 };
+    public final LimelightHelpers.VisionHelper[] poseLimelights = {
             centLL3
     };
 
@@ -87,9 +86,9 @@ public class Vision extends SubsystemBase {
     // @AutoLogOutput(key = "Vision/is_Integrating")
     public static boolean isIntegrating = false;
 
-    public ArrayList<Trio<Pose3d, Pose2d, Double>> autonPoses = new ArrayList<Trio<Pose3d, Pose2d, Double>>();
+    public ArrayList<LimelightHelpers.Trio<Pose3d, Pose2d, Double>> autonPoses = new ArrayList<LimelightHelpers.Trio<Pose3d, Pose2d, Double>>();
 
-    private  boolean isAligning = false;
+    private boolean isAligning = false;
 
     public void setAligning(boolean isAligning) {
         this.isAligning = isAligning;
@@ -102,17 +101,18 @@ public class Vision extends SubsystemBase {
         df.setMaximumFractionDigits(2);
 
         /* Configure Limelight Settings Here */
-        for (VisionHelper visionHelper : allLimelights) {
+        for (LimelightHelpers.VisionHelper visionHelper : allLimelights) {
             visionHelper.setLEDMode(false);
         }
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putBoolean("Reef Tag SCan", this.OnlyIfNullChecker());        // Yaw should be 0 when intake faces red alliance and manip faces blue
+        SmartDashboard.putBoolean("Reef Tag SCan", this.OnlyIfNullChecker()); // Yaw should be 0 when intake faces red
+                                                                              // alliance and manip faces blue
         // Yaw should be 180 when intake faces blue alliance and manip faces red
         double yaw = drivebase.getOperatorForwardDirection().getMeasure().plus(Degrees.of(180)).in(Degrees);
-        for (VisionHelper visionHelper : poseLimelights) {
+        for (LimelightHelpers.VisionHelper visionHelper : poseLimelights) {
             visionHelper.setRobotOrientation(yaw);
 
             if (DriverStation.isAutonomousEnabled() && visionHelper.targetInView()) {
@@ -120,7 +120,7 @@ public class Vision extends SubsystemBase {
                 Pose2d megaPose2d = visionHelper.getMegaPose2d();
                 double timeStamp = visionHelper.getRawPoseTimestamp();
                 Pose2d integratablePose = new Pose2d(megaPose2d.getTranslation(), botpose3D.toPose2d().getRotation());
-                autonPoses.add(Trio.of(botpose3D, integratablePose, timeStamp));
+                autonPoses.add(LimelightHelpers.Trio.of(botpose3D, integratablePose, timeStamp));
             }
         }
 
@@ -130,8 +130,8 @@ public class Vision extends SubsystemBase {
             if (DriverStation.isTeleopEnabled() && VisionConstants.useVisionPeriodic) {
 
                 // choose LL with best view of tags and integrate from only that camera
-                VisionHelper bestLimelight = getBestLimelight();
-                for (VisionHelper visionHelper : poseLimelights) {
+                LimelightHelpers.VisionHelper bestLimelight = getBestLimelight();
+                for (LimelightHelpers.VisionHelper visionHelper : poseLimelights) {
                     if (getReefAlignment().getAsBoolean()
                             && Field.isReef((bestLimelight.getClosestTagID()))) {
                         addFilteredVisionInput(bestLimelight);
@@ -147,7 +147,7 @@ public class Vision extends SubsystemBase {
         }
     }
 
-    private void addFilteredVisionInput(VisionHelper ll) {
+    private void addFilteredVisionInput(LimelightHelpers.VisionHelper ll) {
         double xyStds = 1000;
         double degStds = 1000;
 
@@ -159,7 +159,7 @@ public class Vision extends SubsystemBase {
             Pose3d botpose3D = ll.getRawPose3d();
             Pose2d botpose = botpose3D.toPose2d();
             Pose2d megaPose2d = ll.getMegaPose2d();
-            RawFiducial[] tags = ll.getRawFiducial();
+            LimelightHelpers.RawFiducial[] tags = ll.getRawFiducial();
             double highestAmbiguity = 2;
             ChassisSpeeds robotSpeeds = drivebase.getChassisSpeeds();
 
@@ -169,7 +169,7 @@ public class Vision extends SubsystemBase {
             /* rejections */
             // reject pose if individual tag ambiguity is too high
             ll.tagStatus = "";
-            for (RawFiducial tag : tags) {
+            for (LimelightHelpers.RawFiducial tag : tags) {
                 // search for highest ambiguity tag for later checks
                 if (highestAmbiguity == 2) {
                     highestAmbiguity = tag.ambiguity;
@@ -273,7 +273,7 @@ public class Vision extends SubsystemBase {
         boolean firstSuccess = false;
         double batchSize = 5;
         for (int i = autonPoses.size() - 1; i > autonPoses.size() - (batchSize + 1); i--) {
-            Trio<Pose3d, Pose2d, Double> poseInfo = autonPoses.get(i);
+            LimelightHelpers.Trio<Pose3d, Pose2d, Double> poseInfo = autonPoses.get(i);
             boolean success = resetPoseToVision(
                     true, poseInfo.getFirst(), poseInfo.getSecond(), poseInfo.getThird());
             if (success) {
@@ -299,7 +299,7 @@ public class Vision extends SubsystemBase {
     }
 
     public void resetPoseToVision() {
-        VisionHelper ll = getBestLimelight();
+        LimelightHelpers.VisionHelper ll = getBestLimelight();
         resetPoseToVision(
                 ll.targetInView(), ll.getRawPose3d(), ll.getMegaPose2d(), ll.getRawPoseTimestamp());
     }
@@ -378,10 +378,11 @@ public class Vision extends SubsystemBase {
         return false; // target not in view
     }
 
-    public VisionHelper getBestLimelight() {
-        VisionHelper bestLimelight = centLL3;
+    //TODO: this doesnt work cant find best returns nothing
+    public LimelightHelpers.VisionHelper getBestLimelight() {
+        LimelightHelpers.VisionHelper bestLimelight = centLL3;
         double bestScore = 0;
-        for (VisionHelper visionHelper : poseLimelights) {
+        for (LimelightHelpers.VisionHelper visionHelper : poseLimelights) {
             double score = 0;
             // prefer LL with most tags, when equal tag count, prefer LL closer to tags
             score += visionHelper.getTagCountInView();
@@ -406,7 +407,7 @@ public class Vision extends SubsystemBase {
      * @return
      */
     public boolean hasAccuratePose() {
-        for (VisionHelper visionHelper : poseLimelights) {
+        for (LimelightHelpers.VisionHelper visionHelper : poseLimelights) {
             if (visionHelper.hasAccuratePose())
                 return true;
         }
@@ -451,7 +452,7 @@ public class Vision extends SubsystemBase {
 
     /** Change all LL pipelines to the same pipeline */
     public void setLimelightPipelines(int pipeline) {
-        for (VisionHelper visionHelper : allLimelights) {
+        for (LimelightHelpers.VisionHelper visionHelper : allLimelights) {
             visionHelper.setLimelightPipeline(pipeline);
         }
     }
@@ -469,16 +470,16 @@ public class Vision extends SubsystemBase {
     public Command blinkLimelights() {
         return startEnd(
                 () -> {
-                    for (VisionHelper visionHelper : allLimelights) {
+                    for (LimelightHelpers.VisionHelper visionHelper : allLimelights) {
                         visionHelper.blinkLEDs();
                     }
                 },
                 () -> {
-                    for (VisionHelper visionHelper : allLimelights) {
+                    for (LimelightHelpers.VisionHelper visionHelper : allLimelights) {
                         visionHelper.setLEDMode(false);
                     }
                 })
-                        .withName("Vision.blinkLimelights");
+                .withName("Vision.blinkLimelights");
     }
 
     /** Set left LL to blink */
@@ -490,7 +491,13 @@ public class Vision extends SubsystemBase {
                 () -> {
                     centLL3.setLEDMode(false);
                 })
-                        .withName("Vision.blinkLimelights");
+                .withName("Vision.blinkLimelights");
     }
 
+    public Command commandSetPostionVision() {
+        return new RunCommand(() -> resetPoseToVision(),
+
+                this).withName("setting vision position");
+
+    }
 }
