@@ -4,8 +4,6 @@ import static edu.wpi.first.units.Units.*;
 
 import java.util.function.Supplier;
 
-import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
@@ -35,18 +33,12 @@ import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.Notifier;
 import frc.robot.Constants.TunerConstatns;
 import frc.robot.Constants.AutonConstants;
 import frc.robot.Constants.DrivebaseConstants;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Constants.TunerConstatns.TunerSwerveDrivetrain;
 import frc.robot.Subsystems.Field;
 
 
@@ -83,20 +75,18 @@ public class Drivebase extends frc.robot.Constants.TunerConstatns.TunerSwerveDri
         return perspectiveValue;
     }
 
-    private SwerveRequest.RobotCentric visionRobotCentric = new RobotCentric().withRotationalDeadband(DrivebaseConstants.AutoAngularDeadzone);
-
 	public SwerveRequest.RobotCentric getVisionRobotCentric() {
         return visionRobotCentric;
     }
 
-    private  SwerveRequest.FieldCentric driverControl = new SwerveRequest.FieldCentric()
+    private SwerveRequest.FieldCentric driverControl = new SwerveRequest.FieldCentric()
 			.withDeadband(TunerConstatns.kSpeedAt12Volts.times(0.1))
 			.withRotationalDeadband(DrivebaseConstants.MaxAngularRate.times(0.1).in(RadiansPerSecond)) // Add a 10%
 			.withForwardPerspective(ForwardPerspectiveValue.OperatorPerspective)
 			.withSteerRequestType(SteerRequestType.MotionMagicExpo)
 			.withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
-
+    public SwerveRequest.RobotCentric visionRobotCentric = new RobotCentric().withRotationalDeadband(DrivebaseConstants.VisionAngularDeadzone);
 
     public SwerveRequest.FieldCentric getDriverControl() {
         return driverControl;
@@ -211,6 +201,7 @@ public class Drivebase extends frc.robot.Constants.TunerConstatns.TunerSwerveDri
         return keepPoseOnField(pose);
     }
 
+
     // Keep the robot on the field
     private Pose2d keepPoseOnField(Pose2d pose) {
 
@@ -255,8 +246,12 @@ public class Drivebase extends frc.robot.Constants.TunerConstatns.TunerSwerveDri
      *         If we have issues this is a good place to start. Not confident on the
      *         end command
      */
-    public void driveRobotCentric(ChassisSpeeds chassisSpeeds) {
-        setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(chassisSpeeds));
+    public Command driveRobotCentric(ChassisSpeeds chassisSpeeds) {
+        return applyRequest(() -> visionRobotCentric.withVelocityX(chassisSpeeds.vxMetersPerSecond).withVelocityY(chassisSpeeds.vxMetersPerSecond));
+    }
+
+    public Command stopRobotCentric() {
+        return driveRobotCentric(new ChassisSpeeds(0,0,0));
     }
 
     public Command faceTargetCommand(Rotation2d faceDirection) {
