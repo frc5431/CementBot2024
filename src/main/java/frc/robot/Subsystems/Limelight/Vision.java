@@ -133,7 +133,7 @@ public class Vision extends SubsystemBase {
                 // choose LL with best view of tags and integrate from only that camera
                 LimelightHelpers.VisionHelper bestLimelight = getBestLimelight();
                 //TODO THIS IS WRONG
-                    if (getReefAlignment().getAsBoolean() && Field.isReef((bestLimelight.getClosestTagID()))) {
+                    if (Field.isReef((bestLimelight.getClosestTagID()))) {
                         addFilteredVisionInput(bestLimelight);
                     } else {
                         System.out.print("SAD!: Apriltag is not matched Reef ID");
