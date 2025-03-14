@@ -22,9 +22,13 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants.*;
 import com.pathplanner.lib.config.PIDConstants;
 
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -66,6 +70,14 @@ public static class VisionConstants {
         public static final double i = 0;
         public static final double d = 0.005;
 
+        //TODO: Set these values
+        public static final double FIELD_LENGTH_METERS = 16.54175;
+        public static final double FIELD_WIDTH_METERS = 8.0137;
+
+        // Pose on the opposite side of the field. Use with `relativeTo` to flip a pose to the opposite alliance
+        public static final Pose2d FLIPPING_POSE = new Pose2d(
+            new Translation2d(FIELD_LENGTH_METERS, FIELD_WIDTH_METERS),
+            new Rotation2d(Math.PI));
 
         public static final boolean useVisionPeriodic = true;
 
@@ -133,6 +145,24 @@ public static class VisionConstants {
         // The PID values from last year
         public static final PIDConstants translationPID = new PIDConstants(2, 0, 0);
         public static final PIDConstants rotationPID = new PIDConstants(.1, 0, .01);
+
+        // TODO: Playing with these. Need to clean up
+        public static final double PATH_THETA_kP = 2.6;
+        public static final double PATH_THETA_kI = 0.001;
+        public static final double PATH_THETA_kD = 0.0;
+
+        public static final TrapezoidProfile.Constraints THETA_CONSTRAINTS = new TrapezoidProfile.Constraints(Math.PI, 2 / Math.PI);
+        public static final double THETA_kP = 6.0;
+        public static final double THETA_kI = 0.02;
+        public static final double THETA_kD = 0.0;
+
+        public static final double X_kP = 5.0;
+        public static final double X_kI = 0.0;
+        public static final double X_kD = 0.0;
+
+        public static final double Y_kP = 5.0;
+        public static final double Y_kI = 0.0;
+        public static final double Y_kD = 0.0;
     }
 
   public static class DrivebaseConstants {
@@ -143,6 +173,7 @@ public static class VisionConstants {
 
         public static final AngularVelocity AutoAngularDeadzone = DrivebaseConstants.MaxAngularRate.times(0.1);
         public static final AngularVelocity AutonMaxAngularRate = Units.RotationsPerSecond.of(0.5);
+        public static final LinearVelocity AutonMaxVelocity = MetersPerSecond.of(5);
          
     }
 

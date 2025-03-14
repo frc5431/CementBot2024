@@ -33,7 +33,7 @@ public class AlignReefCommand extends SequentialCommandGroup {
                        drivebase.driveRobotCentric(new ChassisSpeeds(
                             pid.calculate(vision.getCameraXDistance().in(Units.Inches),
                                  rightTrue ? VisionConstants.rightPipeOffset.in(Units.Inches) 
-                                 : VisionConstants.leftPipeOffset.in(Units.Inches)), 0, 0)), 
+                                 : VisionConstants.leftPipeOffset.in(Units.Inches)), 0, 0)).repeatedly(), 
                       
                       new WaitUntilCommand(() -> vision.getPipeAlignDist(rightTrue))// || vision.getPipeAlignOverShoot(rightTrue))
                     ),
