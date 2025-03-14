@@ -62,6 +62,11 @@ public final class Constants {
 
 public static class VisionConstants {
 
+        public static final double p = 0.05;
+        public static final double i = 0;
+        public static final double d = 0.005;
+
+
         public static final boolean useVisionPeriodic = true;
 
         public static final String cameraName = "limelight";
@@ -83,14 +88,14 @@ public static class VisionConstants {
         public static final int rightTagPipeline = 0;
 
         public static final Distance rightPipeOffset = Units.Inches.of(6);
-        public static final Distance leftPipeOffset = Units.Inches.of(6);
+        public static final Distance leftPipeOffset = Units.Inches.of(-6);
         public static final Distance pipeScoreOffset = Units.Inches.of(6);
         public static final Distance centerScoreOffset = Units.Inches.of(2);
         public static final Distance centerOffset = Units.Inches.of(2);
         public static final Distance allowedError = Units.Inches.of(1);
 
-        public static final LinearVelocity alignYVelocity = Units.FeetPerSecond.of(1 / 1);
-        public static final LinearVelocity alignXVelocity = Units.FeetPerSecond.of(1 / 1);
+        public static final LinearVelocity alignYVelocity = Units.FeetPerSecond.of(1);
+        public static final LinearVelocity alignXVelocity = Units.FeetPerSecond.of(1);
         public static final AngularVelocity alignThetaVelocity = Units.RadiansPerSecond.of(0.0);
         public static final ChassisSpeeds alignXSpeed = new ChassisSpeeds(alignXVelocity, Units.FeetPerSecond.of(0),
                 alignThetaVelocity);

@@ -728,10 +728,10 @@ public class LimelightHelpers {
         int valsPerFiducial = 7;
         int expectedTotalVals = 11 + valsPerFiducial * tagCount;
     
-        System.out.println("Before");
-        System.out.println(tagCount);
-        System.out.println(pose.toString());
-        System.out.println("After");
+        // System.out.println("Before");
+        // System.out.println(tagCount);
+        // System.out.println(pose.toString());
+        // System.out.println("After");
 
         if (poseArray.length != expectedTotalVals) {
             // Don't populate fiducials
@@ -1758,8 +1758,9 @@ public class LimelightHelpers {
 
     /** @return the corresponding LL Pose3d (MEGATAG2) for the alliance in DriverStation.java */
     public Pose2d getMegaPose2d() {
-        return LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(CAMERA_NAME)
-                .pose; // 2024: all alliances use blue as 0,0
+        return LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(CAMERA_NAME) != null ?
+                    LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(CAMERA_NAME).pose:
+                    null; // 2024: all alliances use blue as 0,0
     }
 
     public boolean hasAccuratePose() {

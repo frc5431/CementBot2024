@@ -38,6 +38,7 @@ import frc.robot.Constants.AutonConstants;
 import frc.robot.Constants.DrivebaseConstants;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Subsystems.Field;
 
@@ -80,7 +81,7 @@ public class Drivebase extends frc.robot.Constants.TunerConstatns.TunerSwerveDri
     }
 
     private SwerveRequest.FieldCentric driverControl = new SwerveRequest.FieldCentric()
-			.withDeadband(TunerConstatns.kSpeedAt12Volts.times(0.1))
+			.withDeadband(TunerConstatns.kSpeedAt12Volts.times(0.05))
 			.withRotationalDeadband(DrivebaseConstants.MaxAngularRate.times(0.1).in(RadiansPerSecond)) // Add a 10%
 			.withForwardPerspective(ForwardPerspectiveValue.OperatorPerspective)
 			.withSteerRequestType(SteerRequestType.MotionMagicExpo)
@@ -247,11 +248,12 @@ public class Drivebase extends frc.robot.Constants.TunerConstatns.TunerSwerveDri
      *         end command
      */
     public Command driveRobotCentric(ChassisSpeeds chassisSpeeds) {
-        return applyRequest(() -> visionRobotCentric.withVelocityX(chassisSpeeds.vxMetersPerSecond).withVelocityY(chassisSpeeds.vxMetersPerSecond));
+        return run(() -> this.setControl(visionRobotCentric.withVelocityX(chassisSpeeds.vxMetersPerSecond)));
+        // return run(() -> setControl(visionRobotCentric.withVelocityX(chassisSpeeds.vxMetersPerSecond).withVelocityY(chassisSpeeds.vyMetersPerSecond)));
     }
 
     public Command stopRobotCentric() {
-        return driveRobotCentric(new ChassisSpeeds(0,0,0));
+        return new InstantCommand(() -> this.setControl(new SwerveRequest.RobotCentric().withVelocityX(0).withVelocityY(0).withRotationalRate(0)));
     }
 
     public Command faceTargetCommand(Rotation2d faceDirection) {
@@ -273,7 +275,7 @@ public class Drivebase extends frc.robot.Constants.TunerConstatns.TunerSwerveDri
          */
 
         SmartDashboard.putNumber("Gyro", this.getPigeon2().getYaw().getValueAsDouble());
-        SmartDashboard.putNumber("Drivebase Rotation", this.getRotation3d().getMeasureZ().baseUnitMagnitude());
+        SmartDashboard.putNumber("Drivebase Rotation", this.getRotation3d().getMeasureZ().in(Degrees));
         // SmartDashboard.putData("Swerve Pose", (Sendable) this.getRobotPose());
 
         publisher.set(states);

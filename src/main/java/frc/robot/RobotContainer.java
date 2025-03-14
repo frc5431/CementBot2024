@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.Units;
 // import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -16,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.Constants.TunerConstatns;
+import frc.robot.Subsystems.Drivebase.AlignReefCommand;
 import frc.robot.Subsystems.Drivebase.Drivebase;
 import frc.robot.Subsystems.Limelight.Vision;
 import frc.robot.swerve.TitanFieldCentricFacingAngle;
@@ -124,7 +126,7 @@ public class RobotContainer {
 
   private void configureBindings() {
 
-      
+      d_resetGyro.onTrue(drivebase.zeroGyro());
       // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
         drivebase.setDefaultCommand(
@@ -138,8 +140,8 @@ public class RobotContainer {
 										deadzone(-driver.getRightX()
 												* DrivebaseConstants.MaxAngularRate.in(Units.RadiansPerSecond))))
 						.withName("Swerve Default Command"));
-
-          commandTask.onTrue(vision.commandSetPostionVision());
+driver.b().onTrue(drivebase.driveRobotCentric(new ChassisSpeeds(2,2,0)).withName("slam head in wall"));   
+          commandTask.onTrue(new AlignReefCommand(true).withName("Align Reef Command"));
     }
 
     

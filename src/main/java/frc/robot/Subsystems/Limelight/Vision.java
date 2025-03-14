@@ -11,6 +11,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.Subsystems.Drivebase.Drivebase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -108,8 +109,22 @@ public class Vision extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putBoolean("Reef Tag SCan", this.OnlyIfNullChecker()); // Yaw should be 0 when intake faces red
-                                                                              // alliance and manip faces blue
+        SmartDashboard.putBoolean("Reef Tag Scan", this.OnlyIfNullChecker());
+        SmartDashboard.putBoolean("Right Reef Align", this.getPipeAlignDist(true)); // Yaw should be 0 when intake faces
+                                                                                    // red
+        SmartDashboard.putBoolean("Left Reef Align", this.getPipeAlignDist(false));
+        SmartDashboard.putBoolean("Reef Score Dist", this.getPipeScoreDist());
+        SmartDashboard.putNumber("Tag Fid ID", this.getBestLimelight().getClosestTagID());
+
+        SmartDashboard.putNumber("Tag Rotation",
+                getBestLimelight().getMegaPose2d() != null
+                        ? getBestLimelight().getMegaPose2d().getRotation().getDegrees()
+                        : 458734057);
+        SmartDashboard.putNumber("X Camera Distance", getCameraXDistance().in(Inches));
+        SmartDashboard.putNumber("Y Camera Distance", getCameraYDistance().in(Inches));
+
+        // Yaw should be 0 when intake faces red
+        // alliance and manip faces blue
         // Yaw should be 180 when intake faces blue alliance and manip faces red
         double yaw = Systems.getDrivebase().getOperatorForwardDirection().getMeasure().plus(Degrees.of(180))
                 .in(Degrees);
@@ -132,17 +147,19 @@ public class Vision extends SubsystemBase {
 
                 // choose LL with best view of tags and integrate from only that camera
                 LimelightHelpers.VisionHelper bestLimelight = getBestLimelight();
-                //TODO THIS IS WRONG
-                    if (Field.isReef((bestLimelight.getClosestTagID()))) {
-                        addFilteredVisionInput(bestLimelight);
-                    } else {
-                        System.out.print("SAD!: Apriltag is not matched Reef ID");
-                    }
+                if (Field.isReef((bestLimelight.getClosestTagID()))) {
+                    addFilteredVisionInput(bestLimelight);
+                } else {
+                    // TODO ADD BACK IF DOING ODOM
+                    // System.out.print("SAD!: Apriltag is not matched Reef ID");
                 }
+            }
 
-            
         } catch (Exception e) {
-            System.out.println("Vision pose not present but tried to access it [vision.periodic()]");
+            // TODO ADD BACK IF DOING ODOM
+
+            // System.out.println("Vision pose not present but tried to access it
+            // [vision.periodic()]");
         }
     }
 
@@ -281,26 +298,30 @@ public class Vision extends SubsystemBase {
                     firstSuccess = true;
                 }
                 reject = false;
-                System.out.println(
-                        "AutonResetPoseToVision succeeded on " + (autonPoses.size() - i) + " try");
+                // TODO ADD BACK IF DOING ODOM
+
+                // System.out.println(
+                // "AutonResetPoseToVision succeeded on " + (autonPoses.size() - i) + " try");
                 break;
             }
         }
 
         if (reject) {
-            System.out.println(
-                    "AutonResetPoseToVision failed after "
-                            + batchSize
-                            + " of "
-                            + autonPoses.size()
-                            + " possible tries");
+            // TODO ADD BACK IF DOING ODOM
+
+            // System.out.println(
+            // "AutonResetPoseToVision failed after "
+            // + batchSize
+            // + " of "
+            // + autonPoses.size()
+            // + " possible tries");
 
         }
     }
 
     public void resetPoseToVision() {
         LimelightHelpers.VisionHelper ll = getBestLimelight();
-        
+
         resetPoseToVision(
                 ll.targetInView(), ll.getRawPose3d(), ll.getMegaPose2d(), ll.getRawPoseTimestamp());
     }
@@ -322,22 +343,31 @@ public class Vision extends SubsystemBase {
                     || Math.abs(botpose3D.getZ()) > 0.25
                     || (Math.abs(botpose3D.getRotation().getX()) > 5
                             || Math.abs(botpose3D.getRotation().getY()) > 5)) {
-                System.out.println(
-                        "ResetPoseToVision: FAIL || DID NOT RESET POSE TO VISION BECAUSE BAD POSE");
+                // TODO ADD BACK IF DOING ODOM
+
+                // System.out.println(
+                // "ResetPoseToVision: FAIL || DID NOT RESET POSE TO VISION BECAUSE BAD POSE");
                 reject = true;
             }
             if (Field.poseOutOfField(botpose3D)) {
-                System.out.println(
-                        "ResetPoseToVision: FAIL || DID NOT RESET POSE TO VISION BECAUSE OUT OF FIELD");
+                // TODO ADD BACK IF DOING ODOM
+
+                // System.out.println(
+                // "ResetPoseToVision: FAIL || DID NOT RESET POSE TO VISION BECAUSE OUT OF
+                // FIELD");
                 reject = true;
             } else if (Math.abs(botpose3D.getZ()) > 0.25) {
-                System.out.println(
-                        "flying but idc");
+                // TODO ADD BACK IF DOING ODOM
+
+                // System.out.println(
+                // "flying but idc");
                 reject = false;
             } else if ((Math.abs(botpose3D.getRotation().getX()) > 5
                     || Math.abs(botpose3D.getRotation().getY()) > 5)) {
-                System.out.println(
-                        "ResetPoseToVision: FAIL || DID NOT RESET POSE TO VISION BECAUSE TILTED");
+                // TODO ADD BACK IF DOING ODOM
+
+                // System.out.println(
+                // "ResetPoseToVision: FAIL || DID NOT RESET POSE TO VISION BECAUSE TILTED");
                 reject = true;
             }
 
@@ -350,14 +380,15 @@ public class Vision extends SubsystemBase {
             VisionConfig.VISION_STD_DEV_X = 0.001;
             VisionConfig.VISION_STD_DEV_Y = 0.001;
             VisionConfig.VISION_STD_DEV_THETA = 0.001;
+            // TODO ADD BACK IF DOING ODOM
 
-            System.out.println(
-                    "ResetPoseToVision: Old Pose X: "
-                            + robotPose.getX()
-                            + " Y: "
-                            + robotPose.getY()
-                            + " Theta: "
-                            + robotPose.getRotation().getDegrees());
+            // System.out.println(
+            // "ResetPoseToVision: Old Pose X: "
+            // + robotPose.getX()
+            // + " Y: "
+            // + robotPose.getY()
+            // + " Theta: "
+            // + robotPose.getRotation().getDegrees());
             Systems.getDrivebase().setVisionMeasurementStdDevs(
                     VecBuilder.fill(
                             VisionConfig.VISION_STD_DEV_X,
@@ -387,23 +418,23 @@ public class Vision extends SubsystemBase {
         LimelightHelpers.VisionHelper bestLimelight = centLL3;
         // double bestScore = 0;
         // for (LimelightHelpers.VisionHelper visionHelper : poseLimelights) {
-        //     double score = 0;
-        //     // prefer LL with most tags, when equal tag count, prefer LL closer to tags
-        //     try {
-        //         visionHelper.getTagCountInView();
-        //         System.out.println("Exits Get Tag Count" + visionHelper.getTagCountInView());
+        // double score = 0;
+        // // prefer LL with most tags, when equal tag count, prefer LL closer to tags
+        // try {
+        // visionHelper.getTagCountInView();
+        // System.out.println("Exits Get Tag Count" + visionHelper.getTagCountInView());
 
-        //         score += visionHelper.getTagCountInView();
-        //         score += visionHelper.getTargetSize();
+        // score += visionHelper.getTagCountInView();
+        // score += visionHelper.getTargetSize();
 
-        //         if (score > bestScore) {
-        //             bestScore = score;
-        //             bestLimelight = visionHelper;
-        //         }
-        //     } catch (NullPointerException nullPointerException) {
-        //         System.out.println("Get Tag Count Null");
-        //         break;
-        //     }
+        // if (score > bestScore) {
+        // bestScore = score;
+        // bestLimelight = visionHelper;
+        // }
+        // } catch (NullPointerException nullPointerException) {
+        // System.out.println("Get Tag Count Null");
+        // break;
+        // }
         // }
         return bestLimelight;
     }
@@ -440,10 +471,20 @@ public class Vision extends SubsystemBase {
                 VisionConstants.allowedError.in(Inches));
     }
 
+    public boolean getPipeAlignOverShoot(boolean rightTrue) {
+        return (rightTrue ? getCameraXDistance().in(Inches) > VisionConstants.rightPipeOffset.in(Inches)
+                : getCameraXDistance().in(Inches) < VisionConstants.leftPipeOffset.in(Inches));
+
+    }
+
     public boolean getPipeScoreDist() {
         return Calc.approxEquals(getCameraYDistance().in(Inches),
                 VisionConstants.pipeScoreOffset.in(Inches),
                 VisionConstants.allowedError.in(Inches));
+    }
+
+    public boolean getPipeScoreOverShoot() { // pipeScoreOffset should be negative
+        return (VisionConstants.pipeScoreOffset.in(Inches) >= getCameraYDistance().in(Inches));
     }
 
     public boolean leftOfTag() {
@@ -503,7 +544,11 @@ public class Vision extends SubsystemBase {
                 () -> {
                     centLL3.setLEDMode(false);
                 })
-                .withName("Vision.blinkLimelights");
+                .withName("Vision.solidLimeLight");
+    }
+
+    public Command turnOnLimelight() {
+        return new InstantCommand(() -> centLL3.setLEDMode(true));
     }
 
     public Command commandSetPostionVision() {
