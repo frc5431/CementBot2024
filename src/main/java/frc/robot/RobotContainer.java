@@ -20,6 +20,7 @@ import frc.robot.Constants.TunerConstatns;
 import frc.robot.Subsystems.Drivebase.AlignReefCommand;
 import frc.robot.Subsystems.Drivebase.Drivebase;
 import frc.robot.Subsystems.Limelight.Vision;
+import frc.robot.Subsystems.PoseEstimator.PoseEstimator;
 import frc.robot.swerve.TitanFieldCentricFacingAngle;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -31,11 +32,15 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 
 public class RobotContainer {
 
+
   public static final CommandXboxController driver = new CommandXboxController(0);
   public static final CommandXboxController operator = new CommandXboxController(1); 
   private final Systems systems = new Systems();
   private static final Vision vision = Systems.getVision();
   private static final Drivebase drivebase = Systems.getDrivebase();
+
+  private final PoseEstimator poseEstimator = new PoseEstimator(() -> drivebase.getRotation3d().toRotation2d(), () -> drivebase.getState().ModulePositions);
+
 
    private double MaxSpeed = Constants.TunerConstatns.kSpeedAt12Volts.in(Units.MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(Units.RadiansPerSecond); 
