@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.Constants.TunerConstatns;
+import frc.robot.Subsystems.Drivebase.AlignCommand;
 import frc.robot.Subsystems.Drivebase.AlignReefCommand;
 import frc.robot.Subsystems.Drivebase.AlignReefCommandTake2;
 import frc.robot.Subsystems.Drivebase.Drivebase;
@@ -152,8 +153,8 @@ public class RobotContainer {
 										deadzone(-driver.getRightX())
 												* DrivebaseConstants.MaxAngularRate.in(Units.RadiansPerSecond)))
 						.withName("Swerve Default Command"));
-driver.b().onTrue(drivebase.driveRobotCentric(new ChassisSpeeds(2,2,0)).withName("slam head in zzzz"));   
-          // commandTask.onTrue(new AlignReefCommand(false).withName("Align Reef Command"));
+// driver.b().onTrue(drivebase.driveRobotCentric(new ChassisSpeeds(2,2,0)).withName("slam head in zzzz"));   
+          driver.x().onTrue(new AlignCommand(true).withName("Align Reef Command"));
           // driver.x().onTrue(new AlignReefCommandTake2(false).withName("Align Reef Command 2"));
           // commandTask.onTrue(poseEstimator.testcommand());
           driver.a().onTrue(
@@ -162,16 +163,18 @@ driver.b().onTrue(drivebase.driveRobotCentric(new ChassisSpeeds(2,2,0)).withName
                 () -> drivebase.getDriverFieldCentricFacingAngle()
                     .withVelocityX(0.0)  // Set X velocity (forward/backward speed in m/s)
                     .withVelocityY(0.0)  // Set Y velocity (sideways speed in m/s)
-                    .withTargetDirection(new Rotation2d(Math.PI/2).rotateBy(new Rotation2d(Math.PI))) // Set target direction (90 degrees, facing along Y-axis)
-                    .withTargetRateFeedforward(5.0) // Set rotational feedforward in rad/s
+                    .withTargetDirection(drivebase.getAprilTagRotation().rotateBy(new Rotation2d(Math.PI/2))) // Set target direction (90 degrees, facing along Y-axis)
+                    .withTargetRateFeedforward(2.0) // Set rotational feedforward in rad/s
                     .withMaxAbsRotationalRate(5.0)
-                    .withHeadingPID(15,0, 0.01)
+                    .withHeadingPID(1,0, 0.01)
                     )
                 .raceWith(new WaitUntilCommand(() -> test_command()))
-          );
-          driver.x().onTrue(new RotateReefCommand().withName("Rotation Reef Command"));
+          ); //TODO: FIX THIS
+          // driver.x().onTrue(new RotateReefCommand().withName("Rotation Reef Command"));
+          // driver.x().onTrue(drivebase.faceAprilTag());
           // driver.a().onTrue(field.getAprilTagPose3dCommand());
           // driver.a().onTrue(poseEstimator)
+          // driver.rightBumper().onTrue(drivebase.randomTst());
     }
 
     public boolean test_command(){

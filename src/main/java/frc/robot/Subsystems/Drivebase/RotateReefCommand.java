@@ -17,7 +17,7 @@ public class RotateReefCommand extends SequentialCommandGroup {
 
     public RotateReefCommand(){
         addCommands(
-        new SequentialCommandGroup(
+        new ParallelRaceGroup(
         drivebase.faceAprilTag()
         //facetargetcommand
         ));
