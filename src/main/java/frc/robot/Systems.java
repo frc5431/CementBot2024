@@ -5,6 +5,7 @@ package frc.robot;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import frc.robot.Constants.ControllerConstants;
+import frc.robot.Subsystems.Field;
 import frc.robot.Subsystems.Drivebase.Drivebase;
 import frc.robot.Subsystems.Limelight.Vision;
 import frc.team5431.titan.core.joysticks.TitanController;
@@ -37,13 +38,24 @@ public class Systems {
         Constants.TunerConstatns.DrivetrainConstants,
         Constants.TunerConstatns.FrontLeft, Constants.TunerConstatns.FrontRight,
         Constants.TunerConstatns.BackLeft, Constants.TunerConstatns.BackRight);
-
+  private static Field field;
   public static Drivebase getDrivebase() {
     return drivebase;
   }
 
-  public Systems() {
 
+
+  public static Field getField(){
+    if(field == null){
+      System.out.println("*************");
+      System.out.println("Field is null");
+      System.out.println("*************");
+    }
+    return field; 
+  }
+
+  public Systems() {
+    field = new Field();
     blinkin = new Blinkin(0);
     
     vision = new Vision();

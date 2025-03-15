@@ -45,7 +45,7 @@ public class AlignReefCommand extends SequentialCommandGroup {
                    
 
         } else {
-            addCommands();
+            addCommands(new PrintCommand("No Vision"));
         }
       
 

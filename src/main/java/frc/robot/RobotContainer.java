@@ -18,11 +18,14 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.Constants.TunerConstatns;
 import frc.robot.Subsystems.Drivebase.AlignReefCommand;
+import frc.robot.Subsystems.Drivebase.AlignReefCommandTake2;
 import frc.robot.Subsystems.Drivebase.Drivebase;
+import frc.robot.Subsystems.Drivebase.RotateReefCommand;
 import frc.robot.Subsystems.Limelight.Vision;
 import frc.robot.Subsystems.PoseEstimator.PoseEstimator;
 import frc.robot.swerve.TitanFieldCentricFacingAngle;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
+import frc.robot.Subsystems.Field;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
 import static edu.wpi.first.units.Units.RotationsPerSecond;
@@ -38,6 +41,7 @@ public class RobotContainer {
   private final Systems systems = new Systems();
   private static final Vision vision = Systems.getVision();
   private static final Drivebase drivebase = Systems.getDrivebase();
+  public Field field = new Field();
 
   private final PoseEstimator poseEstimator = new PoseEstimator(() -> drivebase.getRotation3d().toRotation2d(), () -> drivebase.getState().ModulePositions);
 
@@ -146,7 +150,12 @@ public class RobotContainer {
 												* DrivebaseConstants.MaxAngularRate.in(Units.RadiansPerSecond))))
 						.withName("Swerve Default Command"));
 driver.b().onTrue(drivebase.driveRobotCentric(new ChassisSpeeds(2,2,0)).withName("slam head in wall"));   
-          commandTask.onTrue(new AlignReefCommand(true).withName("Align Reef Command"));
+          // commandTask.onTrue(new AlignReefCommand(false).withName("Align Reef Command"));
+          // driver.x().onTrue(new AlignReefCommandTake2(false).withName("Align Reef Command 2"));
+          commandTask.onTrue(poseEstimator.testcommand());
+          driver.x().onTrue(new RotateReefCommand().withName("Rotation Reef Command"));
+          // driver.a().onTrue(field.getAprilTagPose3dCommand());
+          // driver.a().onTrue(poseEstimator)
     }
 
     

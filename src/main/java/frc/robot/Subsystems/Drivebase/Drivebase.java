@@ -31,9 +31,11 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.TunerConstatns;
+import frc.robot.Systems;
 import frc.robot.Constants.AutonConstants;
 import frc.robot.Constants.DrivebaseConstants;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -41,6 +43,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Subsystems.Field;
+import frc.robot.Subsystems.Limelight.Vision;
+import frc.robot.commands.RotateToAngleCommand;
 
 
 /**
@@ -48,6 +52,8 @@ import frc.robot.Subsystems.Field;
  * Subsystem so it can easily be used in command-based projects.
  */
 public class Drivebase extends frc.robot.Constants.TunerConstatns.TunerSwerveDrivetrain implements Subsystem {
+    private static SwerveControlParameters controlParameters; //TODO: ADD IN VALUES
+    
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -122,6 +128,23 @@ public class Drivebase extends frc.robot.Constants.TunerConstatns.TunerSwerveDri
             SwerveModuleConstants<?, ?, ?>... modules) {
         super(drivetrainConstants, modules);
         configureAutoBuilder();
+        controlParameters = new SwerveControlParameters();
+        controlParameters.kinematics = this.getKinematics();
+        controlParameters.kMaxSpeedMps = 4.0;
+        controlParameters.currentPose = new Pose2d(0,0,new Rotation2d());
+        controlParameters.currentChassisSpeed = new ChassisSpeeds(0,0,0);
+        controlParameters.timestamp = Timer.getFPGATimestamp();
+        controlParameters.updatePeriod = 0.02;
+    }
+
+    public void updateControlParameters(){
+        controlParameters.currentPose = this.getRobotPose();
+        controlParameters.currentChassisSpeed = this.getChassisSpeeds();
+        controlParameters.timestamp = Timer.getFPGATimestamp();
+    } 
+
+    public static SwerveControlParameters getControlParameters() {
+        return controlParameters;
     }
 
     /**
@@ -150,19 +173,22 @@ public class Drivebase extends frc.robot.Constants.TunerConstatns.TunerSwerveDri
      * @param modules
      *            Constants for each specific module
      */
+    private Field field = new Field();
+    private Vision vision = Systems.getVision();
     public Drivebase(
             SwerveDrivetrainConstants drivetrainConstants,
             double odometryUpdateFrequency,
             Matrix<N3, N1> odometryStandardDeviation,
             Matrix<N3, N1> visionStandardDeviation,
-            SwerveModuleConstants<?, ?, ?>... modules) {
+            SwerveModuleConstants<?, ?, ?>... modules
+            ) {
         super(drivetrainConstants, odometryUpdateFrequency, odometryStandardDeviation, visionStandardDeviation,
                 modules);
         configureAutoBuilder();
     }
 
     public void resetGyro() {
-        this.getPigeon2().setYaw(0);
+        this.getPigeon2().setYaw(90);
     }
 
     public Command zeroGyro() {
@@ -259,6 +285,20 @@ public class Drivebase extends frc.robot.Constants.TunerConstatns.TunerSwerveDri
     public Command faceTargetCommand(Rotation2d faceDirection) {
         return applyRequest(() -> driverFieldCentricFacingAngle.withTargetDirection(faceDirection));
     }
+
+    public Command faceAprilTag(){
+        return new RotateToAngleCommand(this, this.getAprilTagRotation().getDegrees());
+	}
+
+    // public FieldCentricFacingAngle testcentricangle(){
+        
+    // }
+
+    public Rotation2d getAprilTagRotation(){
+        System.out.println("~~~~~~~~~~~");
+        System.out.println(field.getAprilTagPose3d(vision.getBestLimelight().getClosestTagID()).getRotation().toRotation2d());
+		return field.getAprilTagPose3d(vision.getBestLimelight().getClosestTagID()).getRotation().toRotation2d();
+	}
 
     @Override
     public void periodic() {

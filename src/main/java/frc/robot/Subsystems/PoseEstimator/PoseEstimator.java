@@ -11,14 +11,18 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Systems;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.Subsystems.Field;
 import frc.robot.Subsystems.Drivebase.Drivebase;
 
 import edu.wpi.first.wpilibj.Timer;
@@ -51,6 +55,7 @@ public class PoseEstimator extends SubsystemBase{
   private SwerveDrivePoseEstimator poseEstimator;
   private Field2d field2d = new Field2d();
   private final Drivebase drivebase = Systems.getDrivebase();
+  private final Field field = Systems.getField();
 //   private final PhotonRunnable photonEstimator = new PhotonRunnable();
 //   private final Notifier photonNotifier = new Notifier(photonEstimator);
 
@@ -163,7 +168,7 @@ public class PoseEstimator extends SubsystemBase{
    * what "forward" is for field oriented driving.
    */
   public void resetFieldPosition() {
-    setCurrentPose(new Pose2d());
+    setCurrentPose(new Pose2d(new Translation2d(0.0, 0.0), new Rotation2d()));
   }
 
   /**
@@ -174,6 +179,18 @@ public class PoseEstimator extends SubsystemBase{
    */
   private Pose2d flipAlliance(Pose2d poseToFlip) {
     return poseToFlip.relativeTo(VisionConstants.FLIPPING_POSE);
+  }
+
+  public Command testcommand(){
+    return new InstantCommand(()->this.commandprint());
+  }
+
+  public void commandprint(){
+    System.out.println("Field reset");
+    // this.resetFieldPosition();
+    // drivebase.resetRotation(new Rotation2d(0.0));
+    // drivebase.resetTranslation(new Translation2d(0.0, new Rotation2d(0.0)));
+    drivebase.resetPose(new Pose2d(0.0,.0,new Rotation2d(0.0)));
   }
 
 }

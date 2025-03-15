@@ -2,11 +2,13 @@ package frc.robot.Subsystems;
 
 import static edu.wpi.first.units.Units.Inches;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -18,15 +20,23 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Systems;
+import frc.robot.Subsystems.Limelight.Vision;
 
 public class Field {
+	public Vision vision = Systems.getVision();
 	public static final Distance fieldLength = Units.Inches.of(690.876);
+
 	public static Distance getFieldlength() {
 		return fieldLength;
 	}
 
 	private static final Distance halfLength = fieldLength.div(2);
+
 	public static Distance getHalflength() {
 		return halfLength;
 	}
@@ -193,7 +203,8 @@ public class Field {
 	public enum ReefHeight {
 		L4(Units.Inches.of(72), Units.Degrees.of(-90)), L3(Units.Inches.of(47.625), Units.Degrees.of(-35)), L2(
 				Units.Inches.of(31.875),
-				Units.Degrees.of(-35)), L1(Units.Inches.of(18), Units.Degrees.of(0));
+				Units.Degrees.of(-35)),
+		L1(Units.Inches.of(18), Units.Degrees.of(0));
 
 		ReefHeight(Distance height, Angle pitch) {
 			this.height = height;
@@ -204,7 +215,6 @@ public class Field {
 		public final Angle pitch;
 	}
 
-	
 	private static final Distance aprilTagWidth = Units.Inches.of(6.50);
 
 	public static Distance getApriltagwidth() {
@@ -220,7 +230,7 @@ public class Field {
 		return false;
 	}
 
-	public static boolean isRedTag(double id){
+	public static boolean isRedTag(double id) {
 		return id < 12;
 	}
 
@@ -237,6 +247,7 @@ public class Field {
 	}
 
 	public static final Trigger red = new Trigger(() -> isRed());
+
 	public static Trigger getRed() {
 		return red;
 	}
@@ -310,6 +321,43 @@ public class Field {
 		return yCoordinate.in(Inches);
 	}
 
+	private AprilTagFieldLayout aprilTagFieldLayout;
+
+	public Field() {
+		try {
+			aprilTagFieldLayout = new AprilTagFieldLayout(Filesystem.getDeployDirectory().toPath().resolve("2025-reefscape-welded.json"));
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("*************");
+			System.out.println("Filesystem for apriltag didnt work");
+			System.out.println("*************");
+		}
+	}
+
+	public Pose3d getAprilTagPose3d(double aprilTagID) {
+		if (aprilTagFieldLayout != null) {
+				return aprilTagFieldLayout.getTagPose((int) Math.round(aprilTagID)).orElse(null);
+	}
+	else {
+		System.out.println("couldnt return april tag");
+	}
+		return null;
+	}
+
+	public Command getAprilTagPose3dCommand(){
+		return new InstantCommand(()-> getAprilTagPose3d(vision.getBestLimelight().getClosestTagID()));
+	}
+
+	public Command faceAprilTagPose3dCommandRotation(){
+		return new InstantCommand(()-> getAprilTagPose3d(vision.getBestLimelight().getClosestTagID()).getRotation());
+	}
+
+	// public void nestedAprilTagPose3dCommandFunction(){
+	// 	System.out.println("**********");
+	// 	System.out.println(getAprilTagPose3d(vision.getBestLimelight().getClosestTagID()));
+	// 	System.out.println("**********");
+	// }
+
 	public static boolean poseOutOfField(Pose2d pose2D) {
 		double x = pose2D.getX();
 		double y = pose2D.getY();
@@ -319,4 +367,5 @@ public class Field {
 	public static boolean poseOutOfField(Pose3d pose3D) {
 		return poseOutOfField(pose3D.toPose2d());
 	}
+
 }

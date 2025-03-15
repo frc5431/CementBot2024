@@ -2,6 +2,7 @@ package frc.robot.Subsystems.Limelight;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -487,6 +488,7 @@ public class Vision extends SubsystemBase {
         return (VisionConstants.pipeScoreOffset.in(Inches) >= getCameraYDistance().in(Inches));
     }
 
+
     public boolean leftOfTag() {
         return getCameraXDistance().in(Inches) < VisionConstants.centerOffset.in(Inches);
     }
@@ -515,6 +517,7 @@ public class Vision extends SubsystemBase {
             return (Field.isRedTag(getBestLimelight().getClosestTagID()) == Field.isRed())
                     && Field.isReef(getBestLimelight().getClosestTagID());
         } catch (Exception e) {
+            System.out.println("FAIL!");
             return false;
         }
     }
