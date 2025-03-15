@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.Constants.TunerConstatns;
-import frc.robot.Subsystems.Drivebase.AlignCommand;
+// import frc.robot.Subsystems.Drivebase.AlignCommand;
 import frc.robot.Subsystems.Drivebase.AlignReefCommand;
 import frc.robot.Subsystems.Drivebase.AlignReefCommandTake2;
 import frc.robot.Subsystems.Drivebase.Drivebase;
@@ -154,7 +154,8 @@ public class RobotContainer {
 												* DrivebaseConstants.MaxAngularRate.in(Units.RadiansPerSecond)))
 						.withName("Swerve Default Command"));
 // driver.b().onTrue(drivebase.driveRobotCentric(new ChassisSpeeds(2,2,0)).withName("slam head in zzzz"));   
-          driver.x().onTrue(new AlignCommand(true).withName("Align Reef Command"));
+          driver.x().onTrue(new AlignReefCommand(false).withName("Align Reef Command"));
+          driver.b().onTrue(new AlignReefCommand(true).withName("Align Reef Command"));
           // driver.x().onTrue(new AlignReefCommandTake2(false).withName("Align Reef Command 2"));
           // commandTask.onTrue(poseEstimator.testcommand());
           driver.a().onTrue(

@@ -67,9 +67,9 @@ public final class Constants {
 
 public static class VisionConstants {
 
-        public static final double p = 3;
+        public static final double p = 0.01;
         public static final double i = 0;
-        public static final double d = 0.005;
+        public static final double d = 0.001;
 
         //TODO: Set these values
         public static final double FIELD_LENGTH_METERS = 16.54175;
@@ -100,8 +100,8 @@ public static class VisionConstants {
         public static final int centerTagPipeline = 0;
         public static final int rightTagPipeline = 0;
 
-        public static final Distance rightPipeOffset = Units.Inches.of(6);
-        public static final Distance leftPipeOffset = Units.Inches.of(-6);
+        public static final Distance rightPipeOffset = Units.Inches.of(4);
+        public static final Distance leftPipeOffset = Units.Inches.of(-4);
         public static final Distance pipeScoreOffset = Units.Inches.of(6);
         public static final Distance centerScoreOffset = Units.Inches.of(2);
         public static final Distance centerOffset = Units.Inches.of(2);

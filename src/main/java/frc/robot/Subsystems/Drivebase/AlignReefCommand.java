@@ -35,11 +35,11 @@ public class AlignReefCommand extends SequentialCommandGroup {
                                  rightTrue ? VisionConstants.rightPipeOffset.in(Units.Inches) 
                                  : VisionConstants.leftPipeOffset.in(Units.Inches)), 0, 0)).repeatedly(), 
                       
-                      new WaitUntilCommand(() -> vision.getPipeAlignDist(rightTrue))// || vision.getPipeAlignOverShoot(rightTrue))
+                      new WaitUntilCommand(() -> vision.getPipeAlignDist(rightTrue) || vision.getCameraXDistance() == null)// || vision.getPipeAlignOverShoot(rightTrue))
                     ),
                     vision.blinkLimelights().withTimeout(0.5)
 
-                    );
+                    ); 
 
 
                    
