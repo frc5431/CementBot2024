@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.Units;
 // import edu.wpi.first.math.controller.PIDController;
@@ -12,6 +13,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 // import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
@@ -23,8 +25,10 @@ import frc.robot.Subsystems.Drivebase.Drivebase;
 import frc.robot.Subsystems.Drivebase.RotateReefCommand;
 import frc.robot.Subsystems.Limelight.Vision;
 import frc.robot.Subsystems.PoseEstimator.PoseEstimator;
+import frc.robot.commands.RotateToAngleCommand;
 import frc.robot.swerve.TitanFieldCentricFacingAngle;
 import frc.team5431.titan.core.joysticks.CommandXboxController;
+import frc.team5431.titan.core.misc.Calc;
 import frc.robot.Subsystems.Field;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
@@ -95,7 +99,6 @@ public class RobotContainer {
 
   public double deadzone(double num) {
 		if (Math.abs(num) > ControllerConstants.deadzone) {
-			
 			double w = 1.0 / ( 1.0 - ControllerConstants.deadzone);
 			double b = w * ControllerConstants.deadzone;
 			return (w * Math.abs(num) - b) * (num / Math.abs(num));
@@ -146,19 +149,48 @@ public class RobotContainer {
 								.withVelocityY(deadzone(-driver.getLeftX())
 										* Constants.TunerConstatns.kSpeedAt12Volts.in(Units.MetersPerSecond))
 								.withRotationalRate(
-										deadzone(-driver.getRightX()
-												* DrivebaseConstants.MaxAngularRate.in(Units.RadiansPerSecond))))
+										deadzone(-driver.getRightX())
+												* DrivebaseConstants.MaxAngularRate.in(Units.RadiansPerSecond)))
 						.withName("Swerve Default Command"));
-driver.b().onTrue(drivebase.driveRobotCentric(new ChassisSpeeds(2,2,0)).withName("slam head in wall"));   
+driver.b().onTrue(drivebase.driveRobotCentric(new ChassisSpeeds(2,2,0)).withName("slam head in zzzz"));   
           // commandTask.onTrue(new AlignReefCommand(false).withName("Align Reef Command"));
           // driver.x().onTrue(new AlignReefCommandTake2(false).withName("Align Reef Command 2"));
-          commandTask.onTrue(poseEstimator.testcommand());
+          // commandTask.onTrue(poseEstimator.testcommand());
+          driver.a().onTrue(
+            
+            drivebase.applyRequest(
+                () -> drivebase.getDriverFieldCentricFacingAngle()
+                    .withVelocityX(0.0)  // Set X velocity (forward/backward speed in m/s)
+                    .withVelocityY(0.0)  // Set Y velocity (sideways speed in m/s)
+                    .withTargetDirection(new Rotation2d(Math.PI/2).rotateBy(new Rotation2d(Math.PI))) // Set target direction (90 degrees, facing along Y-axis)
+                    .withTargetRateFeedforward(5.0) // Set rotational feedforward in rad/s
+                    .withMaxAbsRotationalRate(5.0)
+                    .withHeadingPID(15,0, 0.01)
+                    )
+                .raceWith(new WaitUntilCommand(() -> test_command()))
+          );
           driver.x().onTrue(new RotateReefCommand().withName("Rotation Reef Command"));
           // driver.a().onTrue(field.getAprilTagPose3dCommand());
           // driver.a().onTrue(poseEstimator)
     }
 
-    
+    public boolean test_command(){
+        double currentHeading = drivebase.getRobotPose().getRotation().getRadians();
+        double setPoint = drivebase.getDriverFieldCentricFacingAngle().HeadingController.getSetpoint();
+        boolean atSetpoint = drivebase.getDriverFieldCentricFacingAngle().HeadingController.atSetpoint();
+        System.out.println(currentHeading);
+        System.out.println(setPoint);
+        System.out.println(atSetpoint);
+        System.out.println(drivebase.getDriverFieldCentricFacingAngle().HeadingController.getPositionError());
+        // System.out.println(drivebase.getDriverFieldCentricFacingAngle().HeadingController.getLastAppliedOutput());
+        drivebase.getDriverFieldCentricFacingAngle().HeadingController.setTolerance(0.1);
+        drivebase.getDriverFieldCentricFacingAngle().HeadingController.disableContinuousInput();
+
+
+        // Check if the current heading is within the tolerance of the target heading
+        return Calc.approxEquals(currentHeading, setPoint, 0.5) && atSetpoint;
+        // return drivebase.getDriverFieldCentricFacingAngle().HeadingController.atSetpoint();
+    }
  
 
     // blinkin.setDefaultCommand(new InstantCommand(() -> blinkin.set(BlinkinPattern.CP1_2_TWINKLES), blinkin));    

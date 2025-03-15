@@ -21,6 +21,7 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -70,6 +71,10 @@ public class Drivebase extends frc.robot.Constants.TunerConstatns.TunerSwerveDri
             .withMaxAbsRotationalRate(DrivebaseConstants.AutonMaxAngularRate)
             .withRotationalDeadband(DrivebaseConstants.AngularDeadzone)
             .withForwardPerspective(ForwardPerspectiveValue.OperatorPerspective);
+
+    public SwerveRequest.FieldCentricFacingAngle getDriverFieldCentricFacingAngle() {
+        return driverFieldCentricFacingAngle;
+    }
 
     private SwerveRequest.RobotCentricFacingAngle autonRobotCentricFacingAngle = new RobotCentricFacingAngle()
             .withMaxAbsRotationalRate(DrivebaseConstants.AutonMaxAngularRate)
@@ -295,9 +300,11 @@ public class Drivebase extends frc.robot.Constants.TunerConstatns.TunerSwerveDri
     // }
 
     public Rotation2d getAprilTagRotation(){
-        System.out.println("~~~~~~~~~~~");
-        System.out.println(field.getAprilTagPose3d(vision.getBestLimelight().getClosestTagID()).getRotation().toRotation2d());
-		return field.getAprilTagPose3d(vision.getBestLimelight().getClosestTagID()).getRotation().toRotation2d();
+		Pose3d tagpose =  field.getAprilTagPose3d(vision.getBestLimelight().getClosestTagID());
+        if(tagpose != null) {
+            return tagpose.getRotation().toRotation2d();
+        }
+        return new Rotation2d();
 	}
 
     @Override
@@ -321,6 +328,7 @@ public class Drivebase extends frc.robot.Constants.TunerConstatns.TunerSwerveDri
         publisher.set(states);
         posePublisher.set(getRobotPose());
         speedsPublisher.set(getChassisSpeeds());
+        updateSimState(0.02, 12.0); // Added so I can use swerve in simulation
 
         if (!hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
             DriverStation.getAlliance().ifPresent(allianceColor -> {
