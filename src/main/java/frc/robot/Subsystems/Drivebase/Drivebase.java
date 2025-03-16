@@ -9,6 +9,7 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentric;
 import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentricFacingAngle;
 import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
 import com.ctre.phoenix6.swerve.SwerveRequest.RobotCentric;
@@ -48,6 +49,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Subsystems.Field;
 import frc.robot.Subsystems.Limelight.Vision;
 import frc.robot.commands.RotateToAngleCommand;
+import frc.team5431.titan.swerve.SwerveConstants;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -76,12 +78,34 @@ public class Drivebase extends frc.robot.Constants.TunerConstatns.TunerSwerveDri
     public SwerveRequest.FieldCentricFacingAngle getDriverFieldCentricFacingAngle() {
         return driverFieldCentricFacingAngle;
     }
+    public SwerveRequest.RobotCentric driveRobotCentric = new RobotCentric()
+            .withDeadband(0)
+            .withRotationalDeadband(0) // Add a 10%
+            .withSteerRequestType(SteerRequestType.MotionMagicExpo)
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);;
 
-    private SwerveRequest.RobotCentricFacingAngle autonRobotCentricFacingAngle = new RobotCentricFacingAngle()
+    public SwerveRequest.RobotCentric getDriveRobotCentric() {
+        return driveRobotCentric;
+    }
+
+    public SwerveRequest.FieldCentric driveFieldCentric = new FieldCentric()
+            .withDeadband(0)
+            .withRotationalDeadband(0) // Add a 10%
+            .withForwardPerspective(ForwardPerspectiveValue.OperatorPerspective)
+            .withSteerRequestType(SteerRequestType.MotionMagicExpo)
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+
+    public SwerveRequest.FieldCentric getDriveFieldCentric() {
+        return driveFieldCentric;
+    }
+    private SwerveRequest.RobotCentricFacingAngle driveRobotCentricFacingAngle = new RobotCentricFacingAngle()
             .withMaxAbsRotationalRate(DrivebaseConstants.AutonMaxAngularRate)
             .withRotationalDeadband(DrivebaseConstants.AutoAngularDeadzone)
             .withForwardPerspective(ForwardPerspectiveValue.OperatorPerspective);
 
+    public SwerveRequest.RobotCentricFacingAngle getDriveRobotCentricFacingAngle() {
+        return driveRobotCentricFacingAngle;
+    }
     private SwerveRequest.ForwardPerspectiveValue perspectiveValue = ForwardPerspectiveValue.OperatorPerspective;
 
     public SwerveRequest.ForwardPerspectiveValue getPerspectiveValue() {

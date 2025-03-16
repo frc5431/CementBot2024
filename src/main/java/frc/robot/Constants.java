@@ -11,7 +11,6 @@ import edu.wpi.first.units.Units;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.MountPoseConfigs;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -67,9 +66,9 @@ public final class Constants {
 
 public static class VisionConstants {
 
-        public static final double p = 0.01;
+        public static final double p = 0.05;
         public static final double i = 0;
-        public static final double d = 0.001;
+        public static final double d = 0.005;
 
         //TODO: Set these values
         public static final double FIELD_LENGTH_METERS = 16.54175;
@@ -100,8 +99,8 @@ public static class VisionConstants {
         public static final int centerTagPipeline = 0;
         public static final int rightTagPipeline = 0;
 
-        public static final Distance rightPipeOffset = Units.Inches.of(4);
-        public static final Distance leftPipeOffset = Units.Inches.of(-4);
+        public static final Distance rightPipeOffset = Units.Inches.of(6);
+        public static final Distance leftPipeOffset = Units.Inches.of(-6);
         public static final Distance pipeScoreOffset = Units.Inches.of(6);
         public static final Distance centerScoreOffset = Units.Inches.of(2);
         public static final Distance centerOffset = Units.Inches.of(2);
@@ -157,13 +156,14 @@ public static class VisionConstants {
         public static final double THETA_kI = 0.02;
         public static final double THETA_kD = 0.0;
 
-        public static final double X_kP = 5.0;
-        public static final double X_kI = 0.0;
-        public static final double X_kD = 0.0;
+        public static final double D_kP = 5.0;
+        public static final double D_kI = 0.0;
+        public static final double D_kD = 0;
 
-        public static final double Y_kP = 5.0;
-        public static final double Y_kI = 0.0;
-        public static final double Y_kD = 0.0;
+        public static final double reefAproach = 1;
+        public static final double reefScoreDist = 0.2;
+        public static final double rightReefoffset = 0.5;
+        public static final double leftReefoffset = -0.5;
     }
 
   public static class DrivebaseConstants {
@@ -228,7 +228,7 @@ public static class VisionConstants {
     private static final CANcoderConfiguration 
     encoderInitialConfigs = new CANcoderConfiguration();
     // Configs for the Pigeon 2; leave this null to skip applying Pigeon 2 configs
-    private static final Pigeon2Configuration pigeonConfigs = new Pigeon2Configuration().withMountPose(new MountPoseConfigs());
+    private static final Pigeon2Configuration pigeonConfigs = null;
 
     // CAN bus that the devices are located on;
     // All swerve devices must share the same CAN bus
