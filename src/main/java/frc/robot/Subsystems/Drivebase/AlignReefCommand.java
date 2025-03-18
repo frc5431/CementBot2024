@@ -6,11 +6,13 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Systems;
+import frc.robot.Subsystems.Field;
 import frc.robot.Subsystems.Limelight.Vision;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.Constants.VisionConstants;
@@ -21,36 +23,37 @@ public class AlignReefCommand extends SequentialCommandGroup {
     private PIDController pid = new PIDController(VisionConstants.p, VisionConstants.i, VisionConstants.d);
 
     public AlignReefCommand(boolean rightTrue) {
-        
 
-        if (vision.OnlyIfNullChecker()) {
-
+        if ((Field.isRedTag(vision.getBestLimelight().getClosestTagID()) == Field.isRed())
+                    && Field.isReef(vision.getBestLimelight().getClosestTagID())) {
             addCommands(
-                    
+
                     new ParallelRaceGroup(
-                        // vision.solidLimelight(),
-                    //    drivebase.driveRobotCentric(rightTrue ? VisionConstants.alignXSpeed : VisionConstants.alignXSpeed.times(-1)),
-                       drivebase.driveRobotCentric(new ChassisSpeeds(
-                            pid.calculate(vision.getCameraXDistance().in(Units.Inches),
-                                 rightTrue ? VisionConstants.rightPipeOffset.in(Units.Inches) 
-                                 : VisionConstants.leftPipeOffset.in(Units.Inches)), 0, 0)).repeatedly(), 
-                      
-                      new WaitUntilCommand(() -> vision.getPipeAlignDist(rightTrue) || vision.getCameraXDistance() == null)// || vision.getPipeAlignOverShoot(rightTrue))
+                            // vision.solidLimelight(),
+                            // drivebase.driveRobotCentric(rightTrue ? VisionConstants.alignXSpeed :
+                            // VisionConstants.alignXSpeed.times(-1)),
+                            drivebase.driveRobotCentricCommand(new ChassisSpeeds(rightTrue ? 0.25 : -0.25, 0, 0)).repeatedly(),
+                            // pid.calculate(vision.getCameraXDistance().in(Units.Inches),
+                            // rightTrue ? VisionConstants.rightPipeOffset.in(Units.Inches)
+                            // : VisionConstants.leftPipeOffset.in(Units.Inches)), 0, 0)).repeatedly(),
+
+                            new WaitUntilCommand(() -> vision.getPipeAlignDist(rightTrue)
+                                    || vision.getCameraXDistance() == Units.Inch.of(0))// ||
+                                                                                       // vision.getPipeAlignOverShoot(rightTrue))
                     ),
                     vision.blinkLimelights().withTimeout(0.5)
 
-                    ); 
-
-
-                   
+            );
 
         } else {
             addCommands(new PrintCommand("No Vision"));
         }
-      
 
         addRequirements(drivebase, vision);
-    } // TODO: fix this
+    }
+    
+
+    // TODO: fix this
 
     // public AlignReefCommand() {
     // if (vision.OnlyIfNullChecker()) {

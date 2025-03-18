@@ -43,7 +43,7 @@ public class AlignReefCommandTake2 extends SequentialCommandGroup {
                     new ParallelRaceGroup(
                         // vision.solidLimelight(),
                     //    drivebase.driveRobotCentric(rightTrue ? VisionConstants.alignXSpeed : VisionConstants.alignXSpeed.times(-1)),
-                       drivebase.driveRobotCentric(new ChassisSpeeds(
+                       drivebase.driveRobotCentricCommand(new ChassisSpeeds(
                             pid.calculate(vision.getCameraXDistance().in(Units.Inches),
                                  rightTrue ? VisionConstants.rightPipeOffset.in(Units.Inches) 
                                  : VisionConstants.leftPipeOffset.in(Units.Inches)), 0, 0)), 

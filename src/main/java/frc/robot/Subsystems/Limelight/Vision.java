@@ -58,6 +58,8 @@ public class Vision extends SubsystemBase {
     public static double VISION_STD_DEV_X = 0.5;
     public static double VISION_STD_DEV_Y = 0.5;
     public static double VISION_STD_DEV_THETA = 99999999;
+    public boolean isAlginAble = false;
+
 
     public static final Matrix<N3, N1> visionStdMatrix = VecBuilder.fill(VISION_STD_DEV_X, VISION_STD_DEV_Y,
             VISION_STD_DEV_THETA);
@@ -111,6 +113,8 @@ public class Vision extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putBoolean("Reef Tag Scan", this.OnlyIfNullChecker());
+        SmartDashboard.putBoolean("Is Alginable", isAlginAble);
+
         SmartDashboard.putBoolean("Right Reef Align", this.getPipeAlignDist(true)); // Yaw should be 0 when intake faces
                                                                                     // red
         SmartDashboard.putBoolean("Left Reef Align", this.getPipeAlignDist(false));
@@ -473,9 +477,11 @@ public class Vision extends SubsystemBase {
     }
 
     public boolean getPipeAlignOverShoot(boolean rightTrue) {
-        return (rightTrue ? getCameraXDistance().in(Inches) > VisionConstants.rightPipeOffset.in(Inches)
-                : getCameraXDistance().in(Inches) < VisionConstants.leftPipeOffset.in(Inches));
-
+        if (rightTrue) {
+            return getCameraXDistance().in(Inches) > VisionConstants.rightPipeOffset.in(Inches);
+        } else {
+            return getCameraXDistance().in(Inches) < VisionConstants.leftPipeOffset.in(Inches);
+        }
     }
 
     public boolean getPipeScoreDist() {
@@ -514,12 +520,18 @@ public class Vision extends SubsystemBase {
 
     public boolean OnlyIfNullChecker() {
         try {
+            SmartDashboard.putBoolean("Field is red?", Field.isRedTag(getBestLimelight().getClosestTagID()) == Field.isRed());
+            SmartDashboard.putBoolean("Tag is Reef", Field.isReef(getBestLimelight().getClosestTagID()));
             return (Field.isRedTag(getBestLimelight().getClosestTagID()) == Field.isRed())
                     && Field.isReef(getBestLimelight().getClosestTagID());
-        } catch (Exception e) {
+        } catch (NullPointerException nullPointerException) {
             System.out.println("FAIL!");
             return false;
         }
+    }
+
+    public Command checkTag() {
+        return new InstantCommand(()-> Field.isReef(getBestLimelight().getClosestTagID()));
     }
 
     /** Set all LLs to blink */

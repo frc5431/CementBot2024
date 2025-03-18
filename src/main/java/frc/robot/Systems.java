@@ -26,7 +26,7 @@ public class Systems {
   public static Systems instance;
 
       private static Vision vision = new Vision();
-
+  
   public static Vision getVision() {
         return vision;
     }

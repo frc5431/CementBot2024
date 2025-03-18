@@ -48,6 +48,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Subsystems.Field;
 import frc.robot.Subsystems.Limelight.Vision;
+import frc.robot.Subsystems.PoseEstimator.PoseEstimator;
 import frc.robot.commands.RotateToAngleCommand;
 import frc.team5431.titan.swerve.SwerveConstants;
 
@@ -136,6 +137,9 @@ public class Drivebase extends frc.robot.Constants.TunerConstatns.TunerSwerveDri
 
     StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault()
             .getStructTopic("Robot Pose", Pose2d.struct).publish();
+
+            
+
 
     StructPublisher<ChassisSpeeds> speedsPublisher = NetworkTableInstance.getDefault()
             .getStructTopic("Chassis Speed", ChassisSpeeds.struct).publish();
@@ -242,7 +246,7 @@ public class Drivebase extends frc.robot.Constants.TunerConstatns.TunerSwerveDri
                     this::getRobotPose,
                     this::resetPose,
                     this::getChassisSpeeds,
-                    (speeds) -> driveRobotCentric(speeds),
+                    (speeds) -> driveRobotCentricCommand(speeds),
                     new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller
                                                     // for holonomic drive trains
                             AutonConstants.translationPID,
@@ -313,11 +317,24 @@ public class Drivebase extends frc.robot.Constants.TunerConstatns.TunerSwerveDri
      *         If we have issues this is a good place to start. Not confident on the
      *         end command
      */
-    public Command driveRobotCentric(ChassisSpeeds chassisSpeeds) {
+    public Command driveRobotCentricCommand(ChassisSpeeds chassisSpeeds) {
         return run(() -> this.setControl(visionRobotCentric.withVelocityX(chassisSpeeds.vxMetersPerSecond)));
         // return run(() ->
         // setControl(visionRobotCentric.withVelocityX(chassisSpeeds.vxMetersPerSecond).withVelocityY(chassisSpeeds.vyMetersPerSecond)));
     }
+
+    /**
+     * @param chassisSpeeds
+     * @return
+     *         If we have issues this is a good place to start. Not confident on the
+     *         end command
+     */
+    public void driveRobotCentric(ChassisSpeeds chassisSpeeds) {
+        this.setControl(visionRobotCentric.withVelocityX(chassisSpeeds.vxMetersPerSecond));
+        // return run(() ->
+        // setControl(visionRobotCentric.withVelocityX(chassisSpeeds.vxMetersPerSecond).withVelocityY(chassisSpeeds.vyMetersPerSecond)));
+    }
+    
 
     public Command stopRobotCentric() {
         return new InstantCommand(() -> this

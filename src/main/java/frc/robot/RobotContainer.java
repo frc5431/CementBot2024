@@ -15,6 +15,7 @@ import edu.wpi.first.units.Units;
 // import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -24,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.Constants.TunerConstatns;
+import frc.robot.Subsystems.Drivebase.AlignCommand;
 // import frc.robot.Subsystems.Drivebase.AlignCommand;
 import frc.robot.Subsystems.Drivebase.AlignReefCommand;
 import frc.robot.Subsystems.Drivebase.AlignReefCommandTake2;
@@ -55,7 +57,7 @@ public class RobotContainer {
   private static final Drivebase drivebase = Systems.getDrivebase();
   public Field field = new Field();
 
-  private final PoseEstimator poseEstimator = new PoseEstimator(() -> drivebase.getRotation3d().toRotation2d(), () -> drivebase.getState().ModulePositions);
+  private PoseEstimator poseEstimator = new PoseEstimator(() -> drivebase.getRotation3d().toRotation2d(), () -> drivebase.getState().ModulePositions);
 
 
    private double MaxSpeed = Constants.TunerConstatns.kSpeedAt12Volts.in(Units.MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -89,6 +91,8 @@ public class RobotContainer {
 
     // drivebase.seedField Relative();
     configureBindings();
+        poseEstimator.setAlliance(Field.isRed() ? Alliance.Red : Alliance.Blue);
+
     DataLogManager.start();
     DriverStation.startDataLog(DataLogManager.getLog());
   }
@@ -137,6 +141,7 @@ public class RobotContainer {
 
   public void periodic() {
     vision.periodic();
+    poseEstimator.periodic();
     SmartDashboard.putData("Scheduler", CommandScheduler.getInstance());
   }
   
@@ -163,8 +168,8 @@ public class RobotContainer {
 												* DrivebaseConstants.MaxAngularRate.in(Units.RadiansPerSecond)))
 						.withName("Swerve Default Command"));
 // driver.b().onTrue(drivebase.driveRobotCentric(new ChassisSpeeds(2,2,0)).withName("slam head in zzzz"));   
-          // driver.x().onTrue(new AlignReefCommand(false).withName("Align Reef Command"));
-          // driver.b().onTrue(new AlignReefCommand(true).withName("Align Reef Command"));
+          driver.x().onTrue(new AlignCommand(false).withName("Align Command"));
+          driver.b().onTrue(new AlignCommand(true).withName("Align Reef Command"));
           // // driver.x().onTrue(new AlignReefCommandTake2(false).withName("Align Reef Command 2"));
           // // commandTask.onTrue(poseEstimator.testcommand());
           // driver.a().onTrue(
@@ -194,14 +199,16 @@ public class RobotContainer {
           // ));
 
 
-          driver.a().onTrue(new DriveToPoseCommand(drivebase, () -> drivebase.getRobotPose(), convert3DPoseTo2D(field.getAprilTagPose3d(10), 1), true));
-          driver.b().onTrue(new DriveToPoseCommand(drivebase, () -> drivebase.getRobotPose(), convert3DPoseTo2D(field.getAprilTagPose3d(9), 1), true));
-          driver.x().onTrue(new DriveToPoseCommand(drivebase, () -> drivebase.getRobotPose(), convert3DPoseTo2D(field.getAprilTagPose3d(10), 2), true));
-          driver.rightBumper().onTrue(new DriveToPoseCommand(drivebase, () -> drivebase.getRobotPose(), convert3DPoseTo2D(field.getAprilTagPose3d(9), 2), true));
+          // driver.a().onTrue(new DriveToPoseCommand(drivebase, () -> drivebase.getRobotPose(), convert3DPoseTo2D(field.getAprilTagPose3d(10), 1), true));
+          // driver.b().onTrue(new DriveToPoseCommand(drivebase, () -> drivebase.getRobotPose(), convert3DPoseTo2D(field.getAprilTagPose3d(9), 1), true));
+          // driver.x().onTrue(new DriveToPoseCommand(drivebase, () -> drivebase.getRobotPose(), convert3DPoseTo2D(field.getAprilTagPose3d(10), 2), true));
+          // driver.rightBumper().onTrue(new DriveToPoseCommand(drivebase, () -> drivebase.getRobotPose(), convert3DPoseTo2D(field.getAprilTagPose3d(9), 2), true));
 
-          driver.leftBumper().onTrue(new DriveToPoseCommand(drivebase, () -> drivebase.getRobotPose(), convert3DPoseTo2D(field.getAprilTagPose3d(10), 0), true));
-          driver.rightTrigger().onTrue(new DriveToPoseCommand(drivebase, () -> drivebase.getRobotPose(), convert3DPoseTo2D(field.getAprilTagPose3d(9), 0), true));
-          driver.leftTrigger().onTrue(new DriveToPoseCommand(drivebase, () -> drivebase.getRobotPose(), convert3DPoseTo2D(field.getAprilTagPose3d(3), 1), true));
+          // driver.leftBumper().onTrue(new DriveToPoseCommand(drivebase, () -> drivebase.getRobotPose(), convert3DPoseTo2D(field.getAprilTagPose3d(10), 0), true));
+          // driver.rightTrigger().onTrue(new DriveToPoseCommand(drivebase, () -> drivebase.getRobotPose(), convert3DPoseTo2D(field.getAprilTagPose3d(9), 0), true));
+          // driver.leftTrigger().onTrue(new DriveToPoseCommand(drivebase, () -> drivebase.getRobotPose(), convert3DPoseTo2D(field.getAprilTagPose3d(3), 1), true));
+
+          
 
     } 
 
