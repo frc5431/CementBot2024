@@ -58,7 +58,7 @@ public class RobotContainer {
   public Field field = new Field();
 
   private PoseEstimator poseEstimator = new PoseEstimator(() -> drivebase.getRotation3d().toRotation2d(), () -> drivebase.getState().ModulePositions);
-
+  
 
    private double MaxSpeed = Constants.TunerConstatns.kSpeedAt12Volts.in(Units.MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(Units.RadiansPerSecond); 
@@ -95,6 +95,7 @@ public class RobotContainer {
 
     DataLogManager.start();
     DriverStation.startDataLog(DataLogManager.getLog());
+
   }
 
   private static double deadband(double value, double deadband) {
@@ -168,8 +169,9 @@ public class RobotContainer {
 												* DrivebaseConstants.MaxAngularRate.in(Units.RadiansPerSecond)))
 						.withName("Swerve Default Command"));
 // driver.b().onTrue(drivebase.driveRobotCentric(new ChassisSpeeds(2,2,0)).withName("slam head in zzzz"));   
-          driver.x().onTrue(new AlignCommand(false).withName("Align Command"));
-          driver.b().onTrue(new AlignCommand(true).withName("Align Reef Command"));
+          // driver.x().onTrue(new AlignCommand(false).withName("Align Command"));
+          // driver.b().onTrue(new AlignCommand(true).withName("Align Reef Command"));
+          driver.a().onTrue(drivebase.setPose2dPositionCommand(vision.calculateRobotPositionFromTag(vision.getBestLimelight().getClosestTagID())).withName("setting pose position"));
           // // driver.x().onTrue(new AlignReefCommandTake2(false).withName("Align Reef Command 2"));
           // // commandTask.onTrue(poseEstimator.testcommand());
           // driver.a().onTrue(
@@ -188,7 +190,7 @@ public class RobotContainer {
           // // driver.x().onTrue(new RotateReefCommand().withName("Rotation Reef Command"));
           // // driver.x().onTrue(drivebase.faceAprilTag());
           // // driver.a().onTrue(field.getAprilTagPose3dCommand());
-          // // driver.a().onTrue(poseEstimator)
+          // driver.a().onTrue(poseEstimator);
           // // driver.rightBumper().onTrue(drivebase.randomTst());
 
           // driver.a().onTrue(
@@ -200,7 +202,7 @@ public class RobotContainer {
 
 
           // driver.a().onTrue(new DriveToPoseCommand(drivebase, () -> drivebase.getRobotPose(), convert3DPoseTo2D(field.getAprilTagPose3d(10), 1), true));
-          // driver.b().onTrue(new DriveToPoseCommand(drivebase, () -> drivebase.getRobotPose(), convert3DPoseTo2D(field.getAprilTagPose3d(9), 1), true));
+          driver.b().onTrue(new DriveToPoseCommand(drivebase, () -> drivebase.getRobotPose(), convert3DPoseTo2D(field.getAprilTagPose3d(18), 1), true));
           // driver.x().onTrue(new DriveToPoseCommand(drivebase, () -> drivebase.getRobotPose(), convert3DPoseTo2D(field.getAprilTagPose3d(10), 2), true));
           // driver.rightBumper().onTrue(new DriveToPoseCommand(drivebase, () -> drivebase.getRobotPose(), convert3DPoseTo2D(field.getAprilTagPose3d(9), 2), true));
 

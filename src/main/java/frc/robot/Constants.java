@@ -11,6 +11,7 @@ import edu.wpi.first.units.Units;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MountPoseConfigs;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -152,12 +153,12 @@ public static class VisionConstants {
         public static final double PATH_THETA_kD = 0.0;
 
         public static final TrapezoidProfile.Constraints THETA_CONSTRAINTS = new TrapezoidProfile.Constraints(Math.PI, 2 / Math.PI);
-        public static final double THETA_kP = 6.0;
+        public static final double THETA_kP = 6;
         public static final double THETA_kI = 0.02;
         public static final double THETA_kD = 0.0;
 
-        public static final double D_kP = 5.0;
-        public static final double D_kI = 0.0;
+        public static final double D_kP = 1;
+        public static final double D_kI = 0.02;
         public static final double D_kD = 0;
 
         public static final double reefAproach = 1;
@@ -228,7 +229,7 @@ public static class VisionConstants {
     private static final CANcoderConfiguration 
     encoderInitialConfigs = new CANcoderConfiguration();
     // Configs for the Pigeon 2; leave this null to skip applying Pigeon 2 configs
-    private static final Pigeon2Configuration pigeonConfigs = null;
+    private static final Pigeon2Configuration pigeonConfigs = new Pigeon2Configuration().withMountPose(new MountPoseConfigs().withMountPoseYaw(90));
 
     // CAN bus that the devices are located on;
     // All swerve devices must share the same CAN bus

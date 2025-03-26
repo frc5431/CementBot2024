@@ -291,6 +291,19 @@ public class Drivebase extends frc.robot.Constants.TunerConstatns.TunerSwerveDri
         return pose;
     }
 
+
+    public Command setPose2dPositionCommand(Pose2d pose2d) {
+        return new InstantCommand(()->resetPose(pose2d));
+    }
+
+    public Command setPose2dTestCommand() {
+        return new InstantCommand(()->testPose2dFunction());
+    }
+
+    public void testPose2dFunction() {
+        resetPose(vision.calculateRobotPositionFromTag());
+    }
+
     public ChassisSpeeds getChassisSpeeds() {
         return getKinematics().toChassisSpeeds(getState().ModuleStates);
     }

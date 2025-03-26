@@ -5,9 +5,12 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -21,6 +24,7 @@ import frc.robot.Subsystems.Limelight.LimelightHelpers;
 import frc.robot.Subsystems.Limelight.VisionUtil.LimelightLogger;
 import frc.robot.Subsystems.Limelight.VisionUtil.VisionConfig;
 import frc.robot.Subsystems.Field;
+import frc.robot.Constants;
 import frc.robot.Constants.VisionConstants;
 import frc.team5431.titan.core.misc.Calc;
 
@@ -528,6 +532,44 @@ public class Vision extends SubsystemBase {
             System.out.println("FAIL!");
             return false;
         }
+    }
+
+    public Field field = new Field();
+    public Pose2d calculateRobotPositionFromTag(){
+      // reefSelect:
+      //    0 = Center
+      //    1 = Right
+      //    2 = Left
+    double reefID = getBestLimelight().getClosestTagID();
+      double distanceAway = getCameraYDistance().in(Inches);
+      double distanceSide = getCameraXDistance().in(Inches);
+
+      Pose3d pose = field.getAprilTagPose3d(reefID);
+      if (pose == null) {
+        System.out.println("NULL is calculate");
+        return new Pose2d();};
+      Translation3d tagTranslation = pose.getTranslation();
+      Rotation3d tagRotation = pose.getRotation();
+
+      double tagYaw = tagRotation.getZ();  // The yaw is the rotation around the z-axis (2D rotation)
+
+       // Calculate the new position 2 meters to the right of the tag
+       double sideX = Math.cos(tagYaw + Math.PI / 2) * distanceSide;  // Move 2 meters to the right in x direction
+       double sideY = Math.sin(tagYaw + Math.PI / 2) * distanceSide;  // Move 2 meters to the right in y direction
+
+       // Calculate the new position 1 meter away from the tag (moving along the tag's facing direction)
+       double awayX = Math.cos(tagYaw) * distanceAway;  // Move 1 meter in front of the tag in x direction
+       double awayY = Math.sin(tagYaw) * distanceAway;  // Move 1 meter in front of the tag in y direction
+
+       // Add both translations (right and away)
+       double newX = tagTranslation.getX() + sideX + awayX;
+       double newY = tagTranslation.getY() + sideY + awayY;
+
+      // Step 4: Create the new Pose3d for the robot's position and rotation
+      System.out.println("RAN COMMAND");
+    //   return new Pose2d(newX, newY, tagRotation.toRotation2d());
+    return pose.toPose2d();
+
     }
 
     public Command checkTag() {
