@@ -91,7 +91,7 @@ public class RobotContainer {
 
     // drivebase.seedField Relative();
     configureBindings();
-        poseEstimator.setAlliance(Field.isRed() ? Alliance.Red : Alliance.Blue);
+        poseEstimator.setAlliance(Field.isBlue() ? Alliance.Blue : Alliance.Red);
 
     DataLogManager.start();
     DriverStation.startDataLog(DataLogManager.getLog());
@@ -171,7 +171,7 @@ public class RobotContainer {
 // driver.b().onTrue(drivebase.driveRobotCentric(new ChassisSpeeds(2,2,0)).withName("slam head in zzzz"));   
           // driver.x().onTrue(new AlignCommand(false).withName("Align Command"));
           // driver.b().onTrue(new AlignCommand(true).withName("Align Reef Command"));
-          driver.a().onTrue(drivebase.setPose2dPositionCommand(vision.calculateRobotPositionFromTag(vision.getBestLimelight().getClosestTagID())).withName("setting pose position"));
+          driver.a().onTrue(drivebase.setPose2dPositionCommand(vision.calculateRobotPositionFromTag()).withName("setting pose position"));
           // // driver.x().onTrue(new AlignReefCommandTake2(false).withName("Align Reef Command 2"));
           // // commandTask.onTrue(poseEstimator.testcommand());
           // driver.a().onTrue(
@@ -202,7 +202,7 @@ public class RobotContainer {
 
 
           // driver.a().onTrue(new DriveToPoseCommand(drivebase, () -> drivebase.getRobotPose(), convert3DPoseTo2D(field.getAprilTagPose3d(10), 1), true));
-          driver.b().onTrue(new DriveToPoseCommand(drivebase, () -> drivebase.getRobotPose(), convert3DPoseTo2D(field.getAprilTagPose3d(18), 1), true));
+          driver.b().onTrue(new DriveToPoseCommand(drivebase, () -> drivebase.getRobotPose(), convert3DPoseTo2D(field.getAprilTagPose3d(18), 0), true).withName("Running Path"));
           // driver.x().onTrue(new DriveToPoseCommand(drivebase, () -> drivebase.getRobotPose(), convert3DPoseTo2D(field.getAprilTagPose3d(10), 2), true));
           // driver.rightBumper().onTrue(new DriveToPoseCommand(drivebase, () -> drivebase.getRobotPose(), convert3DPoseTo2D(field.getAprilTagPose3d(9), 2), true));
 

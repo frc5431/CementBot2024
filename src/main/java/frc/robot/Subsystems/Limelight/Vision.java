@@ -1,5 +1,6 @@
 package frc.robot.Subsystems.Limelight;
 
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.PoseEstimator;
@@ -10,6 +11,9 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -21,6 +25,7 @@ import frc.robot.Subsystems.Drivebase.Drivebase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Subsystems.Limelight.LimelightHelpers;
+import frc.robot.Subsystems.Limelight.LimelightHelpers.RawFiducial;
 import frc.robot.Subsystems.Limelight.VisionUtil.LimelightLogger;
 import frc.robot.Subsystems.Limelight.VisionUtil.VisionConfig;
 import frc.robot.Subsystems.Field;
@@ -44,6 +49,16 @@ public class Vision extends SubsystemBase {
      * {@code allLimelights} &
      * {@code poseLimelights}
      */
+
+    StructArrayPublisher<AprilTag> aprilPublisher = NetworkTableInstance.getDefault()
+            .getStructArrayTopic("AprilTags", new AprilTagStruct()).publish();
+
+    StructPublisher<Pose3d> rawPosePublisher = NetworkTableInstance.getDefault()
+            .getStructTopic("Raw Pose", Pose3d.struct).publish();
+
+    StructPublisher<Pose2d> megaPosePublisher = NetworkTableInstance.getDefault()
+            .getStructTopic("Mega Pose", Pose2d.struct).publish();
+
 
     private Trigger reefAlignment = new Trigger(
             Systems.getDriver().rightBumper().or(Systems.getDriver().leftBumper()));
@@ -112,6 +127,8 @@ public class Vision extends SubsystemBase {
         for (LimelightHelpers.VisionHelper visionHelper : allLimelights) {
             visionHelper.setLEDMode(false);
         }
+
+        aprilPublisher.accept(field.getAprilTagFieldLayout().getTags().toArray(AprilTag[]::new));
     }
 
     @Override
@@ -131,6 +148,13 @@ public class Vision extends SubsystemBase {
                         : 458734057);
         SmartDashboard.putNumber("X Camera Distance", getCameraXDistance().in(Inches));
         SmartDashboard.putNumber("Y Camera Distance", getCameraYDistance().in(Inches));
+        
+
+        // ll.targetInView(), ll.getRawPose3d(), ll.getMegaPose2d(), ll.getRawPoseTimestamp()
+        // want to check these data
+        SmartDashboard.putBoolean("Target In View", this.getBestLimelight().targetInView());
+        rawPosePublisher.set(this.getBestLimelight().getRawPose3d());
+        megaPosePublisher.set(this.getBestLimelight().getMegaPose2d());
 
         // Yaw should be 0 when intake faces red
         // alliance and manip faces blue

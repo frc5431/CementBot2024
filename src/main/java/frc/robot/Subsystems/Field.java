@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -20,6 +21,7 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -323,9 +325,16 @@ public class Field {
 
 	private AprilTagFieldLayout aprilTagFieldLayout;
 
+	public AprilTagFieldLayout getAprilTagFieldLayout() {
+		return aprilTagFieldLayout;
+	}
+
 	public Field() {
 		try {
 			aprilTagFieldLayout = new AprilTagFieldLayout(Filesystem.getDeployDirectory().toPath().resolve("2025-reefscape-welded.json"));
+			// aprilTagFieldLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide); // This is if we are on Blue Side
+			// aprilTagFieldLayout.setOrigin(OriginPosition.kRedAllianceWallRightSide); // This is if we are on Red side
+			aprilTagFieldLayout.setOrigin(Field.isBlue() ? OriginPosition.kBlueAllianceWallRightSide : OriginPosition.kRedAllianceWallRightSide);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("*************");
